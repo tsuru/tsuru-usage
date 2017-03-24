@@ -1,0 +1,1 @@
+web: ./current --tsuru-address $TSURU_HOST --tsuru-token $TSURU_TOKEN --listen-address :$PORT
