@@ -19,6 +19,13 @@ func main() {
 	tsuruToken := flag.String("tsuru-token", "", "Tsuru API user token.")
 	flag.Parse()
 
+	if *tsuruEndpoint == "" {
+		log.Fatal("Must set tsuru endpoint with \"--tsuru-address\" flag.")
+	}
+	if *tsuruToken == "" {
+		log.Fatal("Must set tsuru token with \"--tsuru-token\" flag.")
+	}
+
 	http.Handle("/metrics", promhttp.Handler())
 
 	tsuruClient := newClient(*tsuruEndpoint, *tsuruToken)
