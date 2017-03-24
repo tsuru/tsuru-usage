@@ -6,18 +6,21 @@ package main
 
 import (
 	"log"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 )
 
 var (
-	unitsDesc  = prometheus.NewDesc("tsuru_usage_units", "The current number of started/errored units", []string{"app", "pool"}, nil)
-	nodesDesc  = prometheus.NewDesc("tsuru_usage_nodes", "The current number of nodes", []string{"pool"}, nil)
-	collectErr = prometheus.NewCounterVec(prometheus.CounterOpts{Name: "tsuru_usage_collector_errors", Help: "The error count while fetching metrics"}, []string{"op"})
+	unitsDesc   = prometheus.NewDesc("tsuru_usage_units", "The current number of started/errored units", []string{"app", "pool"}, nil)
+	nodesDesc   = prometheus.NewDesc("tsuru_usage_nodes", "The current number of nodes", []string{"pool"}, nil)
+	collectErr  = prometheus.NewCounterVec(prometheus.CounterOpts{Name: "tsuru_usage_collector_errors", Help: "The error count while fetching metrics"}, []string{"op"})
+	collectHist = prometheus.NewHistogram(prometheus.HistogramOpts{Name: "tsuru_usage_collector_duration_seconds", Help: "The duration of collector runs"})
 )
 
 func init() {
 	prometheus.MustRegister(collectErr)
+	prometheus.MustRegister(collectHist)
 }
 
 type TsuruCollector struct {
@@ -30,6 +33,10 @@ func (c *TsuruCollector) Describe(ch chan<- *prometheus.Desc) {
 }
 
 func (c *TsuruCollector) Collect(ch chan<- prometheus.Metric) {
+	now := time.Now()
+	defer func() {
+		collectHist.Observe(time.Since(now).Seconds())
+	}()
 	unitsCounts, err := c.client.fetchUnitsCount()
 	if err != nil {
 		log.Printf("failed to fetch units metrics: %s", err)
