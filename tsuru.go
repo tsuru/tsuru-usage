@@ -23,6 +23,17 @@ type unitCount struct {
 	count int
 }
 
+type nodeResult struct {
+	Nodes []node
+}
+
+type node struct {
+	Metadata nodeMetadata
+}
+type nodeMetadata struct {
+	Pool string
+}
+
 type app struct {
 	Name  string
 	Units []unit
@@ -38,21 +49,8 @@ func newClient(addr, token string) *tsuruClient {
 }
 
 func (c *tsuruClient) fetchUnitsCount() ([]unitCount, error) {
-	request, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/apps", c.addr), nil)
-	if err != nil {
-		return nil, err
-	}
-	request.Header.Set("Authorization", "bearer "+c.token)
-	response, err := c.httpClient.Do(request)
-	if err != nil {
-		return nil, err
-	}
-	if response.StatusCode == http.StatusNoContent {
-		return nil, nil
-	}
-	defer response.Body.Close()
 	var apps []app
-	err = json.NewDecoder(response.Body).Decode(&apps)
+	err := c.fetchList("apps", &apps)
 	if err != nil {
 		return nil, err
 	}
@@ -67,4 +65,34 @@ func (c *tsuruClient) fetchUnitsCount() ([]unitCount, error) {
 		counts = append(counts, unitCount{app: a.Name, pool: a.Pool, count: count})
 	}
 	return counts, nil
+}
+
+func (c *tsuruClient) fetchNodesCount() (map[string]int, error) {
+	var result nodeResult
+	err := c.fetchList("node", &result)
+	if err != nil {
+		return nil, err
+	}
+	count := make(map[string]int)
+	for _, n := range result.Nodes {
+		count[n.Metadata.Pool]++
+	}
+	return count, nil
+}
+
+func (c *tsuruClient) fetchList(path string, v interface{}) error {
+	request, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s", c.addr, path), nil)
+	if err != nil {
+		return err
+	}
+	request.Header.Set("Authorization", "bearer "+c.token)
+	response, err := c.httpClient.Do(request)
+	if err != nil {
+		return err
+	}
+	if response.StatusCode == http.StatusNoContent {
+		return nil
+	}
+	defer response.Body.Close()
+	return json.NewDecoder(response.Body).Decode(v)
 }

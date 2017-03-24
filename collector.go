@@ -10,7 +10,10 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-var unitsDesc = prometheus.NewDesc("tsuru_usage_units", "The current number of started/errored units", []string{"app", "pool"}, nil)
+var (
+	unitsDesc = prometheus.NewDesc("tsuru_usage_units", "The current number of started/errored units", []string{"app", "pool"}, nil)
+	nodesDesc = prometheus.NewDesc("tsuru_usage_nodes", "The current number of nodes", []string{"pool"}, nil)
+)
 
 type TsuruCollector struct {
 	client *tsuruClient
@@ -27,5 +30,12 @@ func (c *TsuruCollector) Collect(ch chan<- prometheus.Metric) {
 	}
 	for _, u := range unitsCounts {
 		ch <- prometheus.MustNewConstMetric(unitsDesc, prometheus.GaugeValue, float64(u.count), u.app, u.pool)
+	}
+	nodesCounts, err := c.client.fetchNodesCount()
+	if err != nil {
+		log.Printf("failed to fetch nodes metrics: %s", err)
+	}
+	for p, c := range nodesCounts {
+		ch <- prometheus.MustNewConstMetric(nodesDesc, prometheus.GaugeValue, float64(c), p)
 	}
 }
