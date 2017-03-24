@@ -11,16 +11,19 @@ import (
 	"time"
 )
 
+type RequestDoer interface {
+	Do(req *http.Request) (*http.Response, error)
+}
+
 type tsuruClient struct {
 	addr       string
 	token      string
-	httpClient *http.Client
+	httpClient RequestDoer
 }
 
 type unitCount struct {
 	app   string
 	pool  string
-	team  string
 	count int
 }
 
