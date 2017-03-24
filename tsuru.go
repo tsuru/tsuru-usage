@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 type tsuruClient struct {
@@ -45,7 +46,7 @@ type unit struct {
 }
 
 func newClient(addr, token string) *tsuruClient {
-	return &tsuruClient{addr: addr, token: token, httpClient: &http.Client{}}
+	return &tsuruClient{addr: addr, token: token, httpClient: &http.Client{Timeout: 10 * time.Second}}
 }
 
 func (c *tsuruClient) fetchUnitsCount() ([]unitCount, error) {
