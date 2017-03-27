@@ -100,9 +100,12 @@ func (c *tsuruClient) fetchList(path string, v interface{}) error {
 	if err != nil {
 		return err
 	}
+	defer response.Body.Close()
 	if response.StatusCode == http.StatusNoContent {
 		return nil
 	}
-	defer response.Body.Close()
+	if response.StatusCode != http.StatusOK {
+		return fmt.Errorf("returned non OK status code: %s", response.Status)
+	}
 	return json.NewDecoder(response.Body).Decode(v)
 }
