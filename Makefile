@@ -3,7 +3,7 @@
 # license that can be found in the LICENSE file.
 
 build:
-	go build -o bin/tsuru-usage-exporter
+	go build -o bin/tsuru-usage
 
 test:
 	go test ./...
