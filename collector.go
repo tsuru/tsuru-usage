@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	unitsDesc   = prometheus.NewDesc("tsuru_usage_units", "The current number of started/errored units", []string{"app", "pool"}, nil)
+	unitsDesc   = prometheus.NewDesc("tsuru_usage_units", "The current number of started/errored units", []string{"app", "pool", "plan"}, nil)
 	nodesDesc   = prometheus.NewDesc("tsuru_usage_nodes", "The current number of nodes", []string{"pool"}, nil)
 	collectErr  = prometheus.NewCounterVec(prometheus.CounterOpts{Name: "tsuru_usage_collector_errors", Help: "The error count while fetching metrics"}, []string{"op"})
 	collectHist = prometheus.NewHistogram(prometheus.HistogramOpts{Name: "tsuru_usage_collector_duration_seconds", Help: "The duration of collector runs"})
@@ -43,7 +43,7 @@ func (c *TsuruCollector) Collect(ch chan<- prometheus.Metric) {
 		collectErr.WithLabelValues("units").Inc()
 	}
 	for _, u := range unitsCounts {
-		ch <- prometheus.MustNewConstMetric(unitsDesc, prometheus.GaugeValue, float64(u.count), u.app, u.pool)
+		ch <- prometheus.MustNewConstMetric(unitsDesc, prometheus.GaugeValue, float64(u.count), u.app, u.pool, u.plan)
 	}
 	nodesCounts, err := c.client.fetchNodesCount()
 	if err != nil {

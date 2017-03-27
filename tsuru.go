@@ -24,6 +24,7 @@ type tsuruClient struct {
 type unitCount struct {
 	app   string
 	pool  string
+	plan  string
 	count int
 }
 
@@ -40,12 +41,17 @@ type nodeMetadata struct {
 
 type app struct {
 	Name  string
+	Plan  plan
 	Units []unit
 	Pool  string
 }
 
 type unit struct {
 	Status string
+}
+
+type plan struct {
+	Name string
 }
 
 func newClient(addr, token string) *tsuruClient {
@@ -66,7 +72,7 @@ func (c *tsuruClient) fetchUnitsCount() ([]unitCount, error) {
 				count++
 			}
 		}
-		counts = append(counts, unitCount{app: a.Name, pool: a.Pool, count: count})
+		counts = append(counts, unitCount{app: a.Name, pool: a.Pool, count: count, plan: a.Plan.Name})
 	}
 	return counts, nil
 }
