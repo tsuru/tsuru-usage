@@ -50,7 +50,7 @@ func TestFetchNodesCount(t *testing.T) {
 
 func TestFetchUnitsCount(t *testing.T) {
 	body := `[
-{"ip":"10.10.10.11","name":"app1","pool": "pool1", "units":[{"ID":"sapp1/0","Status":"started"}]},
+{"ip":"10.10.10.11","name":"app1","pool": "pool1", "teamowner":"admin", "units":[{"ID":"sapp1/0","Status":"started"}]},
 {"ip":"10.10.10.11","name":"app3","pool": "pool2", "units":[{"ID":"sapp1/0","Status":"stopped"}]},
 {"ip":"10.10.10.11","name":"app4","pool": "pool2"},
 {"ip":"10.10.10.10","name":"app2", "pool":"pool1", "units":[{"ID":"app2/0","Status":"started"},{"ID":"app2/0","Status":"error"}]}]`
@@ -66,7 +66,7 @@ func TestFetchUnitsCount(t *testing.T) {
 		t.Errorf("Expected err to be nil. Got %s", err)
 	}
 	expectedCounts := []unitCount{
-		{app: "app1", pool: "pool1", count: 1},
+		{app: "app1", pool: "pool1", count: 1, team: "admin"},
 		{app: "app3", pool: "pool2", count: 0},
 		{app: "app4", pool: "pool2", count: 0},
 		{app: "app2", pool: "pool1", count: 2},
