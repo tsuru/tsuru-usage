@@ -8,14 +8,17 @@ import (
 	"log"
 	"time"
 
+	"strconv"
+
 	"github.com/prometheus/client_golang/prometheus"
 )
 
 var (
-	unitsDesc   = prometheus.NewDesc("tsuru_usage_units", "The current number of started/errored units", []string{"app", "pool", "plan", "team"}, nil)
-	nodesDesc   = prometheus.NewDesc("tsuru_usage_nodes", "The current number of nodes", []string{"pool"}, nil)
-	collectErr  = prometheus.NewCounterVec(prometheus.CounterOpts{Name: "tsuru_usage_collector_errors", Help: "The error count while fetching metrics"}, []string{"op"})
-	collectHist = prometheus.NewHistogram(prometheus.HistogramOpts{Name: "tsuru_usage_collector_duration_seconds", Help: "The duration of collector runs"})
+	unitsDesc    = prometheus.NewDesc("tsuru_usage_units", "The current number of started/errored units", []string{"app", "pool", "plan", "team"}, nil)
+	nodesDesc    = prometheus.NewDesc("tsuru_usage_nodes", "The current number of nodes", []string{"pool"}, nil)
+	servicesDesc = prometheus.NewDesc("tsuru_usage_services", "The current number of service instances", []string{"service", "instance", "team", "plan"}, nil)
+	collectErr   = prometheus.NewCounterVec(prometheus.CounterOpts{Name: "tsuru_usage_collector_errors", Help: "The error count while fetching metrics"}, []string{"op"})
+	collectHist  = prometheus.NewHistogram(prometheus.HistogramOpts{Name: "tsuru_usage_collector_duration_seconds", Help: "The duration of collector runs"})
 )
 
 func init() {
@@ -24,7 +27,8 @@ func init() {
 }
 
 type TsuruCollector struct {
-	client *tsuruClient
+	client   *tsuruClient
+	services []string
 }
 
 func (c *TsuruCollector) Describe(ch chan<- *prometheus.Desc) {
@@ -52,5 +56,19 @@ func (c *TsuruCollector) Collect(ch chan<- prometheus.Metric) {
 	}
 	for p, c := range nodesCounts {
 		ch <- prometheus.MustNewConstMetric(nodesDesc, prometheus.GaugeValue, float64(c), p)
+	}
+	instances, err := c.client.fetchServicesInstances(c.services)
+	if err != nil {
+		log.Printf("failed to fetch services metrics: %s", err)
+		collectErr.WithLabelValues("services").Inc()
+	}
+	for _, i := range instances {
+		count := 1
+		if str := i.Info["Instances"]; str != "" {
+			if v, err := strconv.Atoi(str); err == nil {
+				count = v
+			}
+		}
+		ch <- prometheus.MustNewConstMetric(servicesDesc, prometheus.GaugeValue, float64(count), i.Service, i.Name, i.TeamOwner, i.PlanName)
 	}
 }

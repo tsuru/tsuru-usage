@@ -92,6 +92,27 @@ func (c *tsuruClient) fetchNodesCount() (map[string]int, error) {
 	return count, nil
 }
 
+func (c *tsuruClient) fetchServicesInstances(services []string) ([]serviceInstance, error) {
+	var result []serviceInstance
+	for i := range services {
+		var partial []serviceInstance
+		err := c.fetchList("services/"+services[i], &partial)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, partial...)
+	}
+	return result, nil
+}
+
+type serviceInstance struct {
+	Service   string
+	Name      string
+	PlanName  string
+	TeamOwner string
+	Info      map[string]string
+}
+
 func (c *tsuruClient) fetchList(path string, v interface{}) error {
 	request, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s", c.addr, path), nil)
 	if err != nil {
