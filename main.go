@@ -5,9 +5,9 @@
 package main
 
 import (
-	"flag"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -15,25 +15,29 @@ import (
 )
 
 func main() {
-	addr := flag.String("listen-address", ":8080", "The address to listen on for HTTP requests.")
-	tsuruEndpoint := flag.String("tsuru-address", "", "The tsuru API address to fetch resources from.")
-	tsuruToken := flag.String("tsuru-token", "", "Tsuru API user token.")
-	tsuruServicesStr := flag.String("tsuru-services", "", "Comma separated list of services to fetch.")
-	flag.Parse()
-
-	if *tsuruEndpoint == "" {
-		log.Fatal("Must set tsuru endpoint with \"--tsuru-address\" flag.")
+	port := os.Getenv("PORT")
+	tsuruEndpoint := os.Getenv("TSURU_HOST")
+	tsuruToken := os.Getenv("USAGE_USER_TOKEN")
+	tsuruServicesStr := os.Getenv("USAGE_SERVICES")
+	if port == "" {
+		port = "8080"
 	}
-	if *tsuruToken == "" {
-		log.Fatal("Must set tsuru token with \"--tsuru-token\" flag.")
+	if tsuruEndpoint == "" {
+		log.Fatal("Must set tsuru endpoint with TSURU_HOST env")
 	}
-	services := strings.Split(*tsuruServicesStr, ",")
+	if tsuruToken == "" {
+		log.Fatal("Must set tsuru token with USAGE_USER_TOKEN env")
+	}
+	var services []string
+	if tsuruServicesStr != "" {
+		services = strings.Split(tsuruServicesStr, ",")
+	}
 
 	http.Handle("/metrics", promhttp.Handler())
 
-	tsuruClient := newClient(*tsuruEndpoint, *tsuruToken)
+	tsuruClient := newClient(tsuruEndpoint, tsuruToken)
 	prometheus.MustRegister(&TsuruCollector{client: tsuruClient, services: services})
 
-	log.Printf("HTTP server listening at %s...\n", *addr)
-	log.Fatal(http.ListenAndServe(*addr, nil))
+	log.Printf("HTTP server listening at :%s...\n", port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }

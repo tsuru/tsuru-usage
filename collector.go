@@ -77,6 +77,9 @@ func (c *TsuruCollector) collectNodes(ch chan<- prometheus.Metric) {
 }
 
 func (c *TsuruCollector) collectInstances(ch chan<- prometheus.Metric) {
+	if len(c.services) == 0 {
+		return
+	}
 	instances, err := c.client.fetchServicesInstances(c.services)
 	if err != nil {
 		log.Printf("failed to fetch services metrics: %s", err)
