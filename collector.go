@@ -89,6 +89,6 @@ func (c *TsuruCollector) collectInstances(ch chan<- prometheus.Metric) {
 				count = v
 			}
 		}
-		ch <- prometheus.MustNewConstMetric(servicesDesc, prometheus.GaugeValue, float64(count), i.Service, i.Name, i.TeamOwner, i.PlanName)
+		ch <- prometheus.MustNewConstMetric(servicesDesc, prometheus.GaugeValue, float64(count), i.ServiceName, i.Name, i.TeamOwner, i.PlanName)
 	}
 }

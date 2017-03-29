@@ -106,11 +106,11 @@ func (c *tsuruClient) fetchServicesInstances(services []string) ([]serviceInstan
 }
 
 type serviceInstance struct {
-	Service   string
-	Name      string
-	PlanName  string
-	TeamOwner string
-	Info      map[string]string
+	ServiceName string
+	Name        string
+	PlanName    string
+	TeamOwner   string
+	Info        map[string]string
 }
 
 func (c *tsuruClient) fetchList(path string, v interface{}) error {

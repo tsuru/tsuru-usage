@@ -75,3 +75,26 @@ func TestFetchUnitsCount(t *testing.T) {
 		t.Errorf("Expected %#+v. Got %#+v", expectedCounts, counts)
 	}
 }
+
+func TestFetchServicesInstances(t *testing.T) {
+	body := `[
+	{"Apps":[],"Id":0,"Info":{"Address":"127.0.0.1","Instances":"1"},"Name":"instance-rpaas","PlanName":"plan1","ServiceName":"rpaas","TeamOwner":"myteam","Teams":["myteam"]}
+]`
+	f := &FakeDoer{
+		response: http.Response{
+			StatusCode: 200,
+			Body:       ioutil.NopCloser(bytes.NewReader([]byte(body))),
+		},
+	}
+	client := tsuruClient{httpClient: f}
+	instances, err := client.fetchServicesInstances([]string{"rpaas"})
+	if err != nil {
+		t.Errorf("Expected err to be nil. Got %s", err)
+	}
+	expectedInstances := []serviceInstance{
+		{ServiceName: "rpaas", Name: "instance-rpaas", PlanName: "plan1", TeamOwner: "myteam", Info: map[string]string{"Address": "127.0.0.1", "Instances": "1"}},
+	}
+	if !reflect.DeepEqual(instances, expectedInstances) {
+		t.Errorf("Expected %#+v. Got %#+v", expectedInstances, instances)
+	}
+}
