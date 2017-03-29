@@ -6,6 +6,7 @@ package main
 
 import (
 	"log"
+	"sync"
 	"time"
 
 	"strconv"
@@ -41,6 +42,19 @@ func (c *TsuruCollector) Collect(ch chan<- prometheus.Metric) {
 	defer func() {
 		collectHist.Observe(time.Since(now).Seconds())
 	}()
+	wg := sync.WaitGroup{}
+	collects := []func(chan<- prometheus.Metric){c.collectUnits, c.collectNodes, c.collectInstances}
+	wg.Add(len(collects))
+	for _, collect := range collects {
+		go func(f func(chan<- prometheus.Metric)) {
+			f(ch)
+			wg.Done()
+		}(collect)
+	}
+	wg.Wait()
+}
+
+func (c *TsuruCollector) collectUnits(ch chan<- prometheus.Metric) {
 	unitsCounts, err := c.client.fetchUnitsCount()
 	if err != nil {
 		log.Printf("failed to fetch units metrics: %s", err)
@@ -49,6 +63,9 @@ func (c *TsuruCollector) Collect(ch chan<- prometheus.Metric) {
 	for _, u := range unitsCounts {
 		ch <- prometheus.MustNewConstMetric(unitsDesc, prometheus.GaugeValue, float64(u.count), u.app, u.pool, u.plan, u.team)
 	}
+}
+
+func (c *TsuruCollector) collectNodes(ch chan<- prometheus.Metric) {
 	nodesCounts, err := c.client.fetchNodesCount()
 	if err != nil {
 		log.Printf("failed to fetch nodes metrics: %s", err)
@@ -57,6 +74,9 @@ func (c *TsuruCollector) Collect(ch chan<- prometheus.Metric) {
 	for p, c := range nodesCounts {
 		ch <- prometheus.MustNewConstMetric(nodesDesc, prometheus.GaugeValue, float64(c), p)
 	}
+}
+
+func (c *TsuruCollector) collectInstances(ch chan<- prometheus.Metric) {
 	instances, err := c.client.fetchServicesInstances(c.services)
 	if err != nil {
 		log.Printf("failed to fetch services metrics: %s", err)
