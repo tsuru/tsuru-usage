@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -92,15 +93,19 @@ func (c *tsuruClient) fetchNodesCount() (map[string]int, error) {
 	return count, nil
 }
 
-func (c *tsuruClient) fetchServicesInstances(services []string) ([]serviceInstance, error) {
+func (c *tsuruClient) fetchServicesInstances(service string) ([]serviceInstance, error) {
 	var result []serviceInstance
-	for i := range services {
-		var partial []serviceInstance
-		err := c.fetchList("services/"+services[i], &partial)
-		if err != nil {
-			return nil, err
+	err := c.fetchList("services/"+service, &result)
+	if err != nil {
+		return nil, err
+	}
+	for i := range result {
+		result[i].count = 1
+		if str := result[i].Info["Instances"]; str != "" {
+			if v, err := strconv.Atoi(str); err == nil {
+				result[i].count = v
+			}
 		}
-		result = append(result, partial...)
 	}
 	return result, nil
 }
@@ -111,6 +116,7 @@ type serviceInstance struct {
 	PlanName    string
 	TeamOwner   string
 	Info        map[string]string
+	count       int
 }
 
 func (c *tsuruClient) fetchList(path string, v interface{}) error {

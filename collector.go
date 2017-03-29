@@ -9,8 +9,6 @@ import (
 	"sync"
 	"time"
 
-	"strconv"
-
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -19,7 +17,8 @@ var (
 	nodesDesc    = prometheus.NewDesc("tsuru_usage_nodes", "The current number of nodes", []string{"pool"}, nil)
 	servicesDesc = prometheus.NewDesc("tsuru_usage_services", "The current number of service instances", []string{"service", "instance", "team", "plan"}, nil)
 	collectErr   = prometheus.NewCounterVec(prometheus.CounterOpts{Name: "tsuru_usage_collector_errors", Help: "The error count while fetching metrics"}, []string{"op"})
-	collectHist  = prometheus.NewHistogram(prometheus.HistogramOpts{Name: "tsuru_usage_collector_duration_seconds", Help: "The duration of collector runs"})
+	buckets      = append(prometheus.DefBuckets, []float64{15, 30, 45, 50}...)
+	collectHist  = prometheus.NewHistogram(prometheus.HistogramOpts{Name: "tsuru_usage_collector_duration_seconds", Help: "The duration of collector runs", Buckets: buckets})
 )
 
 func init() {
@@ -77,21 +76,20 @@ func (c *TsuruCollector) collectNodes(ch chan<- prometheus.Metric) {
 }
 
 func (c *TsuruCollector) collectInstances(ch chan<- prometheus.Metric) {
-	if len(c.services) == 0 {
-		return
-	}
-	instances, err := c.client.fetchServicesInstances(c.services)
-	if err != nil {
-		log.Printf("failed to fetch services metrics: %s", err)
-		collectErr.WithLabelValues("services").Inc()
-	}
-	for _, i := range instances {
-		count := 1
-		if str := i.Info["Instances"]; str != "" {
-			if v, err := strconv.Atoi(str); err == nil {
-				count = v
+	wg := sync.WaitGroup{}
+	wg.Add(len(c.services))
+	for _, s := range c.services {
+		go func(s string) {
+			instances, err := c.client.fetchServicesInstances(s)
+			if err != nil {
+				log.Printf("failed to fetch services metrics: %s", err)
+				collectErr.WithLabelValues("services").Inc()
 			}
-		}
-		ch <- prometheus.MustNewConstMetric(servicesDesc, prometheus.GaugeValue, float64(count), i.ServiceName, i.Name, i.TeamOwner, i.PlanName)
+			for _, i := range instances {
+				ch <- prometheus.MustNewConstMetric(servicesDesc, prometheus.GaugeValue, float64(i.count), i.ServiceName, i.Name, i.TeamOwner, i.PlanName)
+			}
+			wg.Done()
+		}(s)
 	}
+	wg.Wait()
 }

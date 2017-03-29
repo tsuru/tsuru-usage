@@ -78,7 +78,8 @@ func TestFetchUnitsCount(t *testing.T) {
 
 func TestFetchServicesInstances(t *testing.T) {
 	body := `[
-	{"Apps":[],"Id":0,"Info":{"Address":"127.0.0.1","Instances":"1"},"Name":"instance-rpaas","PlanName":"plan1","ServiceName":"rpaas","TeamOwner":"myteam","Teams":["myteam"]}
+	{"Apps":[],"Id":0,"Info":{"Address":"127.0.0.1","Instances":"2"},"Name":"instance-rpaas","PlanName":"plan1","ServiceName":"rpaas","TeamOwner":"myteam","Teams":["myteam"]},
+	{"Apps":[],"Id":0,"Info":{"Address":"127.0.0.1"},"Name":"instance-rpaas","PlanName":"plan1","ServiceName":"rpaas","TeamOwner":"myteam","Teams":["myteam"]}
 ]`
 	f := &FakeDoer{
 		response: http.Response{
@@ -87,12 +88,13 @@ func TestFetchServicesInstances(t *testing.T) {
 		},
 	}
 	client := tsuruClient{httpClient: f}
-	instances, err := client.fetchServicesInstances([]string{"rpaas"})
+	instances, err := client.fetchServicesInstances("rpaas")
 	if err != nil {
 		t.Errorf("Expected err to be nil. Got %s", err)
 	}
 	expectedInstances := []serviceInstance{
-		{ServiceName: "rpaas", Name: "instance-rpaas", PlanName: "plan1", TeamOwner: "myteam", Info: map[string]string{"Address": "127.0.0.1", "Instances": "1"}},
+		{ServiceName: "rpaas", Name: "instance-rpaas", PlanName: "plan1", TeamOwner: "myteam", Info: map[string]string{"Address": "127.0.0.1", "Instances": "2"}, count: 2},
+		{ServiceName: "rpaas", Name: "instance-rpaas", PlanName: "plan1", TeamOwner: "myteam", Info: map[string]string{"Address": "127.0.0.1"}, count: 1},
 	}
 	if !reflect.DeepEqual(instances, expectedInstances) {
 		t.Errorf("Expected %#+v. Got %#+v", expectedInstances, instances)
