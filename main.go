@@ -5,14 +5,17 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/tsuru/tsuru-usage/exporter"
+	"github.com/urfave/negroni"
 )
 
 func main() {
@@ -37,15 +40,21 @@ func main() {
 	runServer(port)
 }
 
-func router() http.Handler {
-	r := mux.NewRouter()
-	r.Handle("/metrics", promhttp.Handler())
-	http.Handle("/metrics", promhttp.Handler())
-	return r
+func runServer(port string) {
+	s := &http.Server{
+		Addr:         fmt.Sprintf(":%s", port),
+		Handler:      router(),
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 30 * time.Second,
+	}
+	log.Printf("HTTP server listening at :%s...\n", port)
+	log.Fatal(s.ListenAndServe())
 }
 
-func runServer(port string) {
-	http.Handle("/", router())
-	log.Printf("HTTP server listening at :%s...\n", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+func router() http.Handler {
+	r := mux.NewRouter()
+	n := negroni.Classic()
+	r.Handle("/metrics", promhttp.Handler())
+	n.UseHandler(r)
+	return n
 }
