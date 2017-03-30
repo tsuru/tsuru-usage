@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package main
+package exporter
 
 import (
 	"log"
@@ -24,6 +24,11 @@ var (
 func init() {
 	prometheus.MustRegister(collectErr)
 	prometheus.MustRegister(collectHist)
+}
+
+func Register(tsuruEndpoint, tsuruToken string, services []string) {
+	tsuruClient := newClient(tsuruEndpoint, tsuruToken)
+	prometheus.MustRegister(&TsuruCollector{client: tsuruClient, services: services})
 }
 
 type TsuruCollector struct {

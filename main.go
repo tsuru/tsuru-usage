@@ -10,8 +10,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/tsuru/tsuru-usage/exporter"
 )
 
 func main() {
@@ -32,11 +32,8 @@ func main() {
 	if tsuruServicesStr != "" {
 		services = strings.Split(tsuruServicesStr, ",")
 	}
-
 	http.Handle("/metrics", promhttp.Handler())
-
-	tsuruClient := newClient(tsuruEndpoint, tsuruToken)
-	prometheus.MustRegister(&TsuruCollector{client: tsuruClient, services: services})
+	exporter.Register(tsuruEndpoint, tsuruToken, services)
 
 	log.Printf("HTTP server listening at :%s...\n", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
