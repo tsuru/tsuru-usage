@@ -14,6 +14,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/tsuru/tsuru-usage/api"
 	"github.com/tsuru/tsuru-usage/exporter"
 	"github.com/urfave/negroni"
 )
@@ -53,6 +54,8 @@ func runServer(port string) {
 
 func router() http.Handler {
 	r := mux.NewRouter()
+	apiRouter := r.PathPrefix("/api").Subrouter()
+	api.Router(apiRouter)
 	n := negroni.Classic()
 	r.Handle("/metrics", promhttp.Handler())
 	n.UseHandler(r)
