@@ -57,6 +57,15 @@ type plan struct {
 	Name string
 }
 
+type serviceInstance struct {
+	ServiceName string
+	Name        string
+	PlanName    string
+	TeamOwner   string
+	Info        map[string]string
+	count       int
+}
+
 func newClient(addr, token string) *tsuruClient {
 	return &tsuruClient{addr: addr, token: token, httpClient: &http.Client{Timeout: 10 * time.Second}}
 }
@@ -108,15 +117,6 @@ func (c *tsuruClient) fetchServicesInstances(service string) ([]serviceInstance,
 		}
 	}
 	return result, nil
-}
-
-type serviceInstance struct {
-	ServiceName string
-	Name        string
-	PlanName    string
-	TeamOwner   string
-	Info        map[string]string
-	count       int
 }
 
 func (c *tsuruClient) fetchList(path string, v interface{}) error {

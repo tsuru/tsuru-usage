@@ -21,6 +21,17 @@ var (
 	collectHist  = prometheus.NewHistogram(prometheus.HistogramOpts{Name: "tsuru_usage_collector_duration_seconds", Help: "The duration of collector runs", Buckets: buckets})
 )
 
+type TsuruCollector struct {
+	client   CollectableClient
+	services []string
+}
+
+type CollectableClient interface {
+	fetchUnitsCount() ([]unitCount, error)
+	fetchNodesCount() (map[string]int, error)
+	fetchServicesInstances(service string) ([]serviceInstance, error)
+}
+
 func init() {
 	prometheus.MustRegister(collectErr)
 	prometheus.MustRegister(collectHist)
@@ -29,11 +40,6 @@ func init() {
 func Register(tsuruEndpoint, tsuruToken string, services []string) {
 	tsuruClient := newClient(tsuruEndpoint, tsuruToken)
 	prometheus.MustRegister(&TsuruCollector{client: tsuruClient, services: services})
-}
-
-type TsuruCollector struct {
-	client   *tsuruClient
-	services []string
 }
 
 func (c *TsuruCollector) Describe(ch chan<- *prometheus.Desc) {
