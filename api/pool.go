@@ -5,20 +5,16 @@
 package api
 
 import (
-	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
 	"sync"
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/prometheus/client_golang/api/prometheus"
-	"github.com/prometheus/common/model"
+	"github.com/tsuru/tsuru-usage/prom"
 )
 
 type monthUsage struct {
@@ -42,10 +38,6 @@ func getPoolUsage(w http.ResponseWriter, r *http.Request) error {
 }
 
 func poolYearUsage(pool string, year int) (map[string]float64, error) {
-	promClient, err := prometheus.New(prometheus.Config{Address: os.Getenv("PROMETHEUS_HOST")})
-	if err != nil {
-		return nil, err
-	}
 	usages := make(chan monthUsage, 12)
 	usage := make(map[string]float64)
 	wg := sync.WaitGroup{}
@@ -53,7 +45,7 @@ func poolYearUsage(pool string, year int) (map[string]float64, error) {
 		wg.Add(1)
 		go func(m int) {
 			defer wg.Done()
-			usage, err := poolMonthUsage(promClient, pool, year, time.Month(m))
+			usage, err := poolMonthUsage(pool, year, time.Month(m))
 			if err != nil {
 				log.Printf("failed to get month %s usage: %s", time.Month(m).String(), err)
 			}
@@ -68,24 +60,8 @@ func poolYearUsage(pool string, year int) (map[string]float64, error) {
 	return usage, nil
 }
 
-func poolMonthUsage(client prometheus.Client, pool string, year int, month time.Month) (float64, error) {
+func poolMonthUsage(pool string, year int, month time.Month) (float64, error) {
 	t := time.Date(year, month+1, 1, 0, 0, 0, 0, time.UTC)
 	sel := fmt.Sprintf("tsuru_usage_nodes{pool=%q}", pool)
-	return getAvgOverPeriod(client, sel, "30d", t)
-}
-
-func getAvgOverPeriod(client prometheus.Client, selector, duration string, t time.Time) (float64, error) {
-	query := fmt.Sprintf("avg(avg_over_time(%s[%s]))", selector, duration)
-	result, err := prometheus.NewQueryAPI(client).Query(context.Background(), query, t)
-	if err != nil {
-		return 0, err
-	}
-	vec, ok := result.(model.Vector)
-	if !ok {
-		return 0, errors.New("failed to parse result from query")
-	}
-	if len(vec) == 0 {
-		return 0, nil
-	}
-	return float64(vec[0].Value), nil
+	return prom.GetAvgOverPeriod(sel, "30d", t)
 }
