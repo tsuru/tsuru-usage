@@ -1,1 +1,1 @@
-web: ./current
+web: ./tsuru-usage
