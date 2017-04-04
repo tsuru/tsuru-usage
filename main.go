@@ -16,6 +16,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/tsuru/tsuru-usage/api"
 	"github.com/tsuru/tsuru-usage/exporter"
+	"github.com/tsuru/tsuru-usage/web"
 	"github.com/urfave/negroni"
 )
 
@@ -56,6 +57,8 @@ func router() http.Handler {
 	r := mux.NewRouter()
 	apiRouter := r.PathPrefix("/api").Subrouter()
 	api.Router(apiRouter)
+	webRouter := r.PathPrefix("/web").Subrouter()
+	web.Router(webRouter)
 	n := negroni.Classic()
 	r.Handle("/metrics", promhttp.Handler())
 	n.UseHandler(r)
