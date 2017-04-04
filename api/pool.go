@@ -7,10 +7,8 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -55,29 +53,6 @@ func poolYearUsage(pool string, year int) ([]PoolUsage, error) {
 		usage[k-1] = PoolUsage{Pool: pool, Month: k.String(), Usage: val}
 	}
 	return usage, nil
-}
-
-func runForYear(f func(month time.Month) (model.Vector, error)) map[time.Month]model.Vector {
-	results := make(chan monthUsage, 12)
-	usage := make(map[time.Month]model.Vector)
-	wg := sync.WaitGroup{}
-	wg.Add(12)
-	for m := 1; m <= 12; m++ {
-		go func(m int) {
-			result, err := f(time.Month(m))
-			if err != nil {
-				log.Printf("failed to get month %s usage: %s", time.Month(m).String(), err)
-			}
-			results <- monthUsage{month: time.Month(m), value: result}
-			wg.Done()
-		}(m)
-	}
-	wg.Wait()
-	close(results)
-	for u := range results {
-		usage[u.month] = u.value
-	}
-	return usage
 }
 
 func poolMonthlyUsage(pool string, year int) func(month time.Month) (model.Vector, error) {
