@@ -26,4 +26,5 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func Router(m *mux.Router) {
 	m.Handle("/pool/{name}/{year}", handler(getPoolUsage))
+	m.Handle("/apps/{team}/{year}", handler(getTeamAppsUsage))
 }

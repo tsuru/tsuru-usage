@@ -8,6 +8,8 @@ import (
 	"os"
 	"time"
 
+	"strings"
+
 	"github.com/prometheus/client_golang/api/prometheus"
 	"github.com/prometheus/common/model"
 )
@@ -15,7 +17,7 @@ import (
 var Client PrometheusAPI
 
 type PrometheusAPI interface {
-	getAvgOverPeriod(selector, duration string, t time.Time) (float64, error)
+	getAvgOverPeriod(selector, duration string, t time.Time, by ...string) (model.Vector, error)
 }
 
 type prometheusAPI struct {
@@ -32,22 +34,25 @@ func init() {
 	}
 }
 
-func GetAvgOverPeriod(selector, duration string, t time.Time) (float64, error) {
-	return Client.getAvgOverPeriod(selector, duration, t)
+func GetAvgOverPeriod(selector, duration string, t time.Time, by ...string) (model.Vector, error) {
+	return Client.getAvgOverPeriod(selector, duration, t, by...)
 }
 
-func (p *prometheusAPI) getAvgOverPeriod(selector, duration string, t time.Time) (float64, error) {
+func (p *prometheusAPI) getAvgOverPeriod(selector, duration string, t time.Time, by ...string) (model.Vector, error) {
 	query := fmt.Sprintf("avg(avg_over_time(%s[%s]))", selector, duration)
+	if len(by) > 0 {
+		query += " by (" + strings.Join(by, ",") + ")"
+	}
 	result, err := p.queryAPI.Query(context.Background(), query, t)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 	vec, ok := result.(model.Vector)
 	if !ok {
-		return 0, errors.New("failed to parse result from query")
+		return nil, errors.New("failed to parse result from query")
 	}
-	if len(vec) == 0 {
-		return 0, nil
+	if len(vec) == 0 || vec == nil {
+		return model.Vector{&model.Sample{Value: model.SampleValue(0)}}, nil
 	}
-	return float64(vec[0].Value), nil
+	return vec, nil
 }

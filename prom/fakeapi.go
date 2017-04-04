@@ -1,21 +1,32 @@
 package prom
 
-import "time"
+import (
+	"fmt"
+	"strings"
+	"time"
+
+	"github.com/prometheus/common/model"
+)
 
 type FakePrometheusAPI struct {
-	results map[string]float64
+	results map[string]model.Vector
 }
 
-func (p *FakePrometheusAPI) Add(selector, duration string, t time.Time, v float64) {
-	if p.results == nil {
-		p.results = make(map[string]float64)
-	}
-	p.results[selector+"/"+duration+"/"+t.String()] = v
+func key(selector, duration string, t time.Time, by ...string) string {
+	keyFmt := "%s/%s/%s/%s"
+	return fmt.Sprintf(keyFmt, selector, duration, t.String(), strings.Join(by, ","))
 }
 
-func (p *FakePrometheusAPI) getAvgOverPeriod(selector, duration string, t time.Time) (float64, error) {
+func (p *FakePrometheusAPI) Add(selector, duration string, t time.Time, v model.Vector, by ...string) {
 	if p.results == nil {
-		p.results = make(map[string]float64)
+		p.results = make(map[string]model.Vector)
 	}
-	return p.results[selector+"/"+duration+"/"+t.String()], nil
+	p.results[key(selector, duration, t, by...)] = v
+}
+
+func (p *FakePrometheusAPI) getAvgOverPeriod(selector, duration string, t time.Time, by ...string) (model.Vector, error) {
+	if p.results == nil {
+		p.results = make(map[string]model.Vector)
+	}
+	return p.results[key(selector, duration, t, by...)], nil
 }
