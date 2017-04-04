@@ -1,0 +1,35 @@
+{{define "content"}}
+<h1>Tsuru Usage per pool</h1>
+<form>
+  <div>
+    <label for="pool">Pool: </label>
+    <select name="pool">
+      {{range $pool := .}}
+        <option value="{{$pool}}">{{$pool}}</option>
+      {{end}}
+    </select>
+  </div>
+
+  <div>
+    <label for="year">Year:</label>
+    <input type="number" size="4" name="year" required />
+  </div>
+
+  <button type="submit">Run</button>
+</form>
+
+<script>
+  var form = document.querySelector("form");
+  form.addEventListener("submit", event => {
+    event.preventDefault();
+
+    var formData = new FormData(event.target);
+    var data = {};
+    for (var [name, value] of formData.entries()) {
+      data[name] = value;
+    }
+    window.location = "/web/pool/" + data.pool + "/" + data.year + "/";
+  });
+</script>
+{{end}}
+

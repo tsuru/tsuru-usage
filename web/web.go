@@ -27,4 +27,5 @@ func (fn handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // Router return a http.Handler with all web routes
 func Router(m *mux.Router) {
 	m.HandleFunc("/", indexHandler).Methods("GET")
+	m.HandleFunc("/pool/", poolListHandler).Methods("GET")
 }
