@@ -8,6 +8,9 @@ build:
 test:
 	go test ./...
 
+coverage:
+	./go.test.bash
+
 linux-build:
 	GOOS=linux GOARCH=amd64 go build -o tsuru-usage
 

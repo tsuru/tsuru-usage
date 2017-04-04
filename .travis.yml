@@ -7,7 +7,7 @@ env:
   global:
     - GOARCH=amd64
 script:
-  - make test
+  - make coverage
 notifications:
   email:
     on_success: change
