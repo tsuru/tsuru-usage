@@ -28,4 +28,6 @@ func Router(m *mux.Router) {
 	m.Handle("/pool/{name}/{year}", handler(getPoolUsage))
 	m.Handle("/apps/{team}/{year}", handler(getTeamAppsUsage))
 	m.Handle("/services/{team}/{year}", handler(getTeamServicesUsage))
+	m.Handle("/teamgroups/{name}", handler(updateTeamGroup)).Methods(http.MethodPut)
+	m.Handle("/teamgroups", handler(listTeamGroups))
 }
