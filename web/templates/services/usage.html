@@ -1,37 +1,30 @@
 {{define "content"}}
 <a href="/web/apps/">&lt;&lt; Back</a>
 
-<h1>Tsuru usage for team {{.TeamName}} in {{.Year}}</h1>
-<style>
-  .table td {
-    vertical-align: middle;
-  }
-</style>
+<h1>Services usage for team {{.Team}} in {{.Year}}</h1>
 <table class="table table-hover">
 	<thead>
 		<tr>
-			<td>Month</td>
-      <td>Service</td>
-			<td>Plan</td>
-      <td>Usage</td>
+			<th>Month</th>
+			<th>Service</th>
+			<th>Plan</th>
+			<th>Usage</th>
 		</tr>
 	</thead>
 
 	<tbody>
 		{{range $item := .Usage}}
-      {{$count := len $item.Usage}}
-      {{range $i, $usage := $item.Usage}}
-        <tr>
-          {{if eq $count 1}}
-            <td>{{$item.Month}}</td>
-          {{else if eq $i 0}}
-            <td rowspan="{{$count}}">{{$item.Month}}</td>
-          {{end}}
-          <td>{{$usage.Service}}</td>
-          <td>{{$usage.Plan}}</td>
-          <td>{{$usage.Usage}}</td>
-        </tr>
-      {{end}}
+			{{$count := len $item.Usage}}
+			{{range $i, $usage := $item.Usage}}
+				<tr>
+					{{if eq $i 0}}
+						<th scope="row" rowspan="{{$count}}">{{$item.Month}}</th>
+					{{end}}
+					<td>{{$usage.Service}}</td>
+					<td>{{$usage.Plan}}</td>
+					<td>{{$usage.Usage}}</td>
+				</tr>
+			{{end}}
 		{{end}}
 	</tbody>
 </table>

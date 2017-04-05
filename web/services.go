@@ -14,7 +14,6 @@ import (
 )
 
 type ServiceUsage struct {
-	Team  string
 	Month string
 	Usage []struct {
 		Service string
@@ -23,14 +22,14 @@ type ServiceUsage struct {
 	}
 }
 
-func serviceListHandler(w http.ResponseWriter, r *http.Request) {
-	apps := []string{"app 1", "app 2", "app 3", "app 4"}
-	render(w, "web/templates/services/index.html", apps)
+func serviceTeamListHandler(w http.ResponseWriter, r *http.Request) {
+	teams := []string{"team 1", "team 2", "team 3", "team 4"}
+	render(w, "web/templates/services/index.html", teams)
 }
 
 func serviceUsageHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	team := vars["name"]
+	team := vars["team"]
 	year := vars["year"]
 	url := fmt.Sprintf("/api/services/%s/%s", team, year)
 	response, err := http.Get(url)
@@ -43,9 +42,9 @@ func serviceUsageHandler(w http.ResponseWriter, r *http.Request) {
 	var usage []ServiceUsage
 	json.NewDecoder(response.Body).Decode(&usage)
 	context := struct {
-		TeamName string
-		Year     string
-		Usage    []ServiceUsage
+		Team  string
+		Year  string
+		Usage []ServiceUsage
 	}{
 		team,
 		year,
