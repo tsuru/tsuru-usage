@@ -2,7 +2,6 @@ package api
 
 import (
 	"log"
-	"strings"
 	"sync"
 	"time"
 
@@ -30,12 +29,4 @@ func runForYear(f func(month time.Month) (model.Vector, error)) map[time.Month]m
 		usage[u.month] = u.value
 	}
 	return usage
-}
-
-func selectorForGroup(groupName string) (string, error) {
-	group, err := FindTeamGroup(groupName)
-	if err != nil {
-		return "", err
-	}
-	return strings.Join(group.Teams, "|"), nil
 }

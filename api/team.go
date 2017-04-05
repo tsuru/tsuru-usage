@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -82,14 +83,6 @@ func teamAppsYearUsage(team string, year int, teamSelector string) ([]TeamAppUsa
 	return usage, nil
 }
 
-func monthlyUsage(metric, team string, year int, by ...string) func(month time.Month) (model.Vector, error) {
-	sel := fmt.Sprintf("%s{team=~%q}", metric, team)
-	return func(month time.Month) (model.Vector, error) {
-		t := time.Date(year, month+1, 1, 0, 0, 0, 0, time.UTC)
-		return prom.GetAvgOverPeriod(sel, "30d", t, by...)
-	}
-}
-
 type TeamServiceUsage struct {
 	Team  string
 	Month string
@@ -115,4 +108,20 @@ func teamServicesYearUsage(team string, year int, teamSelector string) ([]TeamSe
 		usage[k-1] = TeamServiceUsage{Team: team, Month: k.String(), Usage: servUsage}
 	}
 	return usage, nil
+}
+
+func selectorForGroup(groupName string) (string, error) {
+	group, err := FindTeamGroup(groupName)
+	if err != nil {
+		return "", err
+	}
+	return strings.Join(group.Teams, "|"), nil
+}
+
+func monthlyUsage(metric, team string, year int, by ...string) func(month time.Month) (model.Vector, error) {
+	sel := fmt.Sprintf("%s{team=~%q}", metric, team)
+	return func(month time.Month) (model.Vector, error) {
+		t := time.Date(year, month+1, 1, 0, 0, 0, 0, time.UTC)
+		return prom.GetAvgOverPeriod(sel, "30d", t, by...)
+	}
 }
