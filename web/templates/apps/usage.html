@@ -1,0 +1,25 @@
+{{define "content"}}
+<a href="/web/apps/">&lt;&lt; Back</a>
+
+<h1>Tsuru usage for app {{.AppName}} in {{.Year}}</h1>
+<table>
+	<thead>
+		<tr>
+			<td>Month</td>
+			<td>Plan</td>
+      <td>Usage</td>
+		</tr>
+	</thead>
+	<tbody>
+		{{range $item := .Usage}}
+      {{range $usage := $item.Usage}}
+        <tr>
+          <td>{{$item.Month}}</td>
+          <td>{{$usage.Plan}}</td>
+          <td>{{$usage.Usage}}</td>
+        </tr>
+      {{end}}
+		{{end}}
+	</tbody>
+</table>
+{{end}}

@@ -1,0 +1,37 @@
+{{define "content"}}
+<a href="/web/">&lt;&lt; Back</a>
+
+<h1>Tsuru usage per app</h1>
+<form>
+  <div>
+    <label for="app">App: </label>
+    <select name="app">
+      {{range $app := .}}
+        <option value="{{$app}}">{{$app}}</option>
+      {{end}}
+    </select>
+  </div>
+
+  <div>
+    <label for="year">Year:</label>
+    <input type="number" size="4" name="year" required />
+  </div>
+
+  <button type="submit">Run</button>
+</form>
+
+<script>
+  var form = document.querySelector("form");
+  form.addEventListener("submit", event => {
+    event.preventDefault();
+
+    var formData = new FormData(event.target);
+    var data = {};
+    for (var [name, value] of formData.entries()) {
+      data[name] = value;
+    }
+    window.location = "/web/apps/" + data.app + "/" + data.year + "/";
+  });
+</script>
+{{end}}
+
