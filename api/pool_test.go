@@ -49,7 +49,7 @@ func (s *S) TestGetPoolUsage(c *check.C) {
 	fakeAPI.Add("tsuru_usage_nodes{pool=\"mypool\"}", "30d", s.nextDay(time.December), toVector(2))
 	prom.Client = fakeAPI
 	recorder := httptest.NewRecorder()
-	request, err := http.NewRequest(http.MethodGet, "/pool/mypool/2017", nil)
+	request, err := http.NewRequest(http.MethodGet, "/pools/mypool/2017", nil)
 	c.Assert(err, check.IsNil)
 	server(recorder, request)
 	c.Assert(recorder.Code, check.Equals, http.StatusOK)
