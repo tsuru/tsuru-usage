@@ -28,4 +28,5 @@ func (fn handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func Router(m *mux.Router) {
 	m.HandleFunc("/", indexHandler).Methods("GET")
 	m.HandleFunc("/pool/", poolListHandler).Methods("GET")
+	m.HandleFunc("/pool/{name}/{year}/", poolUsageHandler).Methods("GET")
 }

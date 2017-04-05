@@ -1,0 +1,6 @@
+{{define "content"}}
+<h1>Tsuru usage for pool {{.PoolName}} in {{.Year}}</h1>
+{{range $item := .Usage}}
+	{{$item.Month}} - {{$item.Usage}}
+{{end}}
+{{end}}
