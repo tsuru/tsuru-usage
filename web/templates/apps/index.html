@@ -4,34 +4,34 @@
 <h1>Tsuru usage per app</h1>
 <form>
 <div class="form-group">
-  <label for="app">App</label>
-  <select name="app" class="form-control">
-    {{range $app := .}}
-      <option value="{{$app}}">{{$app}}</option>
-    {{end}}
-  </select>
+	<label for="team">Team</label>
+	<select name="team" class="form-control">
+		{{range $team := .}}
+			<option value="{{$team}}">{{$team}}</option>
+		{{end}}
+	</select>
 </div>
 
 <div class="form-group">
-    <label for="year">Year</label>
-    <input type="number" size="4" name="year" required class="form-control" />
-  </div>
+		<label for="year">Year</label>
+		<input type="number" size="4" name="year" required class="form-control" />
+	</div>
 
-  <button type="submit" class="btn btn-primary btn-lg">Run</button>
+	<button type="submit" class="btn btn-primary btn-lg">Run</button>
 </form>
 
 <script>
-  var form = document.querySelector("form");
-  form.addEventListener("submit", event => {
-    event.preventDefault();
+	var form = document.querySelector("form");
+	form.addEventListener("submit", event => {
+		event.preventDefault();
 
-    var formData = new FormData(event.target);
-    var data = {};
-    for (var [name, value] of formData.entries()) {
-      data[name] = value;
-    }
-    window.location = "/web/apps/" + data.app + "/" + data.year + "/";
-  });
+		var formData = new FormData(event.target);
+		var data = {};
+		for (var [name, value] of formData.entries()) {
+			data[name] = value;
+		}
+		window.location = "/web/apps/" + data.team + "/" + data.year + "/";
+	});
 </script>
 {{end}}
 

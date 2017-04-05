@@ -14,7 +14,6 @@ import (
 )
 
 type AppUsage struct {
-	Team  string
 	Month string
 	Usage []struct {
 		Plan  string
@@ -22,16 +21,16 @@ type AppUsage struct {
 	}
 }
 
-func appListHandler(w http.ResponseWriter, r *http.Request) {
-	apps := []string{"app 1", "app 2", "app 3", "app 4"}
-	render(w, "web/templates/apps/index.html", apps)
+func appTeamListHandler(w http.ResponseWriter, r *http.Request) {
+	teams := []string{"team1", "team2", "team3", "team4"}
+	render(w, "web/templates/apps/index.html", teams)
 }
 
 func appUsageHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	app := vars["name"]
+	team := vars["team"]
 	year := vars["year"]
-	url := fmt.Sprintf("/api/apps/%s/%s", app, year)
+	url := fmt.Sprintf("/api/apps/%s/%s", team, year)
 	response, err := http.Get(url)
 	if err != nil {
 		log.Printf("Error fetching %s: %s", url, err)
@@ -42,11 +41,11 @@ func appUsageHandler(w http.ResponseWriter, r *http.Request) {
 	var usage []AppUsage
 	json.NewDecoder(response.Body).Decode(&usage)
 	context := struct {
-		AppName string
-		Year    string
-		Usage   []AppUsage
+		Team  string
+		Year  string
+		Usage []AppUsage
 	}{
-		app,
+		team,
 		year,
 		usage,
 	}
