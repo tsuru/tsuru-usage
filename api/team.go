@@ -32,7 +32,7 @@ func getTeamUsage(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	group, _ := strconv.ParseBool(r.Form.Get("group"))
+	group, _ := strconv.ParseBool(r.FormValue("group"))
 	teamSel := team
 	if group {
 		var err error
@@ -70,7 +70,7 @@ type AppUsage struct {
 }
 
 func teamAppsYearUsage(team string, year int, teamSelector string) ([]TeamAppUsage, error) {
-	result := runForYear(monthlyUsage("tsuru_usage_units", team, year, "plan"))
+	result := runForYear(monthlyUsage("tsuru_usage_units", teamSelector, year, "plan"))
 	usage := make([]TeamAppUsage, 12)
 	for k, v := range result {
 		var appUsage []AppUsage
@@ -96,7 +96,7 @@ type ServiceUsage struct {
 }
 
 func teamServicesYearUsage(team string, year int, teamSelector string) ([]TeamServiceUsage, error) {
-	result := runForYear(monthlyUsage("tsuru_usage_services", team, year, "service", "plan"))
+	result := runForYear(monthlyUsage("tsuru_usage_services", teamSelector, year, "service", "plan"))
 	usage := make([]TeamServiceUsage, 12)
 	for k, v := range result {
 		var servUsage []ServiceUsage
