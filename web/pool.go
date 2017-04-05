@@ -31,6 +31,7 @@ func poolUsageHandler(w http.ResponseWriter, r *http.Request) {
 	url := fmt.Sprintf("/api/pool/%s/%s", pool, year)
 	response, err := http.Get(url)
 	if err != nil {
+		log.Printf("Error fetching %s: %s", url, err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
