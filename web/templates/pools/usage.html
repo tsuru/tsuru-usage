@@ -5,14 +5,14 @@
 <table class="table table-hover">
 	<thead>
 		<tr>
-			<td>Month</td>
-			<td>Usage</td>
+			<th>Month</th>
+			<th>Usage</th>
 		</tr>
 	</thead>
 	<tbody>
 		{{range $item := .Usage}}
 			<tr>
-				<td>{{$item.Month}}</td>
+				<th scope="row">{{$item.Month}}</td>
 				<td>{{$item.Usage}}</td>
 			</tr>
 		{{end}}

@@ -3,35 +3,35 @@
 
 <h1>Tsuru usage per pool</h1>
 <form>
-  <div class="form-group">
-    <label for="pool">Pool</label>
-    <select name="pool" class="form-control">
-      {{range $pool := .}}
-        <option value="{{$pool}}">{{$pool}}</option>
-      {{end}}
-    </select>
-  </div>
+	<div class="form-group">
+		<label for="pool">Pool</label>
+		<select name="pool" class="form-control">
+			{{range $pool := .}}
+				<option value="{{$pool}}">{{$pool}}</option>
+			{{end}}
+		</select>
+	</div>
 
-  <div class="form-group">
-    <label for="year">Year</label>
-    <input type="number" size="4" name="year" required class="form-control" />
-  </div>
+	<div class="form-group">
+		<label for="year">Year</label>
+		<input type="number" size="4" name="year" required class="form-control" />
+	</div>
 
-  <button type="submit" class="btn btn-primary btn-lg">Run</button>
+	<button type="submit" class="btn btn-primary btn-lg">Run</button>
 </form>
 
 <script>
-  var form = document.querySelector("form");
-  form.addEventListener("submit", event => {
-    event.preventDefault();
+	var form = document.querySelector("form");
+	form.addEventListener("submit", event => {
+		event.preventDefault();
 
-    var formData = new FormData(event.target);
-    var data = {};
-    for (var [name, value] of formData.entries()) {
-      data[name] = value;
-    }
-    window.location = "/web/pools/" + data.pool + "/" + data.year + "/";
-  });
+		var formData = new FormData(event.target);
+		var data = {};
+		for (var [name, value] of formData.entries()) {
+			data[name] = value;
+		}
+		window.location = "/web/pools/" + data.pool + "/" + data.year + "/";
+	});
 </script>
 {{end}}
 
