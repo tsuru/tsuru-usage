@@ -21,14 +21,14 @@ type PoolUsage struct {
 
 func poolListHandler(w http.ResponseWriter, r *http.Request) {
 	pools := []string{"staging", "prod", "workshop"}
-	render(w, "web/templates/pool/index.html", pools)
+	render(w, "web/templates/pools/index.html", pools)
 }
 
 func poolUsageHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	pool := vars["name"]
 	year := vars["year"]
-	url := fmt.Sprintf("/api/pool/%s/%s", pool, year)
+	url := fmt.Sprintf("/api/pools/%s/%s", pool, year)
 	response, err := http.Get(url)
 	if err != nil {
 		log.Printf("Error fetching %s: %s", url, err)
@@ -47,7 +47,7 @@ func poolUsageHandler(w http.ResponseWriter, r *http.Request) {
 		year,
 		usage,
 	}
-	err = render(w, "web/templates/pool/usage.html", context)
+	err = render(w, "web/templates/pools/usage.html", context)
 	if err != nil {
 		log.Println(err)
 	}
