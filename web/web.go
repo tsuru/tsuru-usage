@@ -31,4 +31,6 @@ func Router(m *mux.Router) {
 	m.HandleFunc("/pools/{name}/{year}/", poolUsageHandler).Methods("GET")
 	m.HandleFunc("/apps/", appListHandler).Methods("GET")
 	m.HandleFunc("/apps/{name}/{year}/", appUsageHandler).Methods("GET")
+	m.HandleFunc("/services/", serviceListHandler).Methods("GET")
+	m.HandleFunc("/services/{name}/{year}/", serviceUsageHandler).Methods("GET")
 }
