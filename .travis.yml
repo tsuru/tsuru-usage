@@ -8,6 +8,8 @@ env:
     - GOARCH=amd64
 script:
   - make coverage
+services:
+  - mongodb
 notifications:
   email:
     on_success: change
