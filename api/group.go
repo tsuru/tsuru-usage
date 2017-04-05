@@ -14,6 +14,19 @@ type TeamGroup struct {
 	Teams []string
 }
 
+func FindTeamGroup(name string) (*TeamGroup, error) {
+	conn, err := db.Conn()
+	if err != nil {
+		return nil, err
+	}
+	var group TeamGroup
+	err = conn.TeamGroups().Find(bson.M{"name": name}).One(&group)
+	if err != nil {
+		return nil, err
+	}
+	return &group, nil
+}
+
 func updateTeamGroup(w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	name := vars["name"]
