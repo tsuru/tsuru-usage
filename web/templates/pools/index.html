@@ -3,21 +3,21 @@
 
 <h1>Tsuru usage per pool</h1>
 <form>
-  <div>
-    <label for="pool">Pool: </label>
-    <select name="pool">
+  <div class="form-group">
+    <label for="pool">Pool</label>
+    <select name="pool" class="form-control">
       {{range $pool := .}}
         <option value="{{$pool}}">{{$pool}}</option>
       {{end}}
     </select>
   </div>
 
-  <div>
-    <label for="year">Year:</label>
-    <input type="number" size="4" name="year" required />
+  <div class="form-group">
+    <label for="year">Year</label>
+    <input type="number" size="4" name="year" required class="form-control" />
   </div>
 
-  <button type="submit">Run</button>
+  <button type="submit" class="btn btn-primary btn-lg">Run</button>
 </form>
 
 <script>
