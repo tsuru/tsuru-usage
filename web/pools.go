@@ -16,7 +16,7 @@ import (
 type PoolUsage struct {
 	Pool  string
 	Month string
-	Usage int
+	Usage float64
 }
 
 func poolListHandler(w http.ResponseWriter, r *http.Request) {

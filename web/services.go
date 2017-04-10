@@ -18,7 +18,7 @@ type ServiceUsage struct {
 	Usage []struct {
 		Service string
 		Plan    string
-		Usage   int
+		Usage   float64
 	}
 }
 

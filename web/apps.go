@@ -17,7 +17,7 @@ type AppUsage struct {
 	Month string
 	Usage []struct {
 		Plan  string
-		Usage int
+		Usage float64
 	}
 }
 
