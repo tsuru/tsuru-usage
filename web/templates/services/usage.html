@@ -11,6 +11,8 @@
 			<th>Service</th>
 			<th>Plan</th>
 			<th>Usage</th>
+			<th>Unit cost</th>
+			<th>Total cost</th>
 		</tr>
 	</thead>
 
@@ -25,6 +27,8 @@
 					<td>{{$usage.Service}}</td>
 					<td>{{$usage.Plan}}</td>
 					<td>{{$usage.Usage}}</td>
+					<td>{{$usage.Cost.UnitCost}} {{$usage.Cost.MeasureUnit}}</td>
+					<td>{{$usage.Cost.TotalCost}} {{$usage.Cost.MeasureUnit}}</td>
 				</tr>
 			{{end}}
 		{{end}}
@@ -32,7 +36,9 @@
 	<tfoot>
 		<tr>
 			<th scope="row" colspan="3">Total</th>
-			<th>{{.Total}}</th>
+			<th>{{.Total.Usage}}</th>
+			<th>{{.Total.UnitCost}} {{.Total.MeasureUnit}}</th>
+			<th>{{.Total.TotalCost}} {{.Total.MeasureUnit}}</th>
 		</tr>
 	</tfoot>
 </table>
