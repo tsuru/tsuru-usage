@@ -61,6 +61,7 @@ func router() http.Handler {
 	web.Router(webRouter)
 	n := negroni.Classic()
 	r.Handle("/metrics", promhttp.Handler())
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	n.UseHandler(r)
 	return n
 }
