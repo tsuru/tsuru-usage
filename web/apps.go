@@ -13,11 +13,23 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type AppCost struct {
+	MeasureUnit string
+	UnitCost    float64
+	TotalCost   float64
+}
+
+type TotalAppCost struct {
+	AppCost
+	Usage float64
+}
+
 type AppUsage struct {
 	Month string
 	Usage []struct {
 		Plan  string
 		Usage float64
+		Cost  AppCost
 	}
 }
 
@@ -44,12 +56,12 @@ func appUsageHandler(w http.ResponseWriter, r *http.Request) {
 		Team  string
 		Year  string
 		Usage []AppUsage
-		Total float64
+		Total TotalAppCost
 	}{
 		team,
 		year,
 		usage,
-		totalAppUsage(usage),
+		totalAppCost(usage),
 	}
 	err = render(w, "web/templates/apps/usage.html", context)
 	if err != nil {
@@ -57,12 +69,17 @@ func appUsageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func totalAppUsage(usage []AppUsage) float64 {
-	var result float64
+func totalAppCost(usage []AppUsage) TotalAppCost {
+	total := TotalAppCost{}
 	for _, month := range usage {
 		for _, item := range month.Usage {
-			result += item.Usage
+			if item.Cost.MeasureUnit != "" && total.MeasureUnit == "" {
+				total.MeasureUnit = item.Cost.MeasureUnit
+			}
+			total.UnitCost += item.Cost.UnitCost
+			total.TotalCost += item.Cost.TotalCost
+			total.Usage += item.Usage
 		}
 	}
-	return result
+	return total
 }
