@@ -22,6 +22,7 @@ func (s *S) TestUpdateTeamGroup(c *check.C) {
 	recorder := httptest.NewRecorder()
 	params := url.Values{}
 	params.Set("teams", "myteam")
+	params.Set("pools", "mypool")
 	reqBody := strings.NewReader(params.Encode())
 	request, err := http.NewRequest(http.MethodPut, "/teamgroups/mygroup", reqBody)
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -33,9 +34,10 @@ func (s *S) TestUpdateTeamGroup(c *check.C) {
 	var groups []TeamGroup
 	err = conn.TeamGroups().Find(nil).All(&groups)
 	c.Assert(err, check.IsNil)
-	c.Assert(groups, check.DeepEquals, []TeamGroup{{Name: "mygroup", Teams: []string{"myteam"}}})
+	c.Assert(groups, check.DeepEquals, []TeamGroup{{Name: "mygroup", Teams: []string{"myteam"}, Pools: []string{"mypool"}}})
 	recorder = httptest.NewRecorder()
 	params["teams"] = append(params["teams"], "mynewteam")
+	params.Del("pools")
 	reqBody = strings.NewReader(params.Encode())
 	request, err = http.NewRequest(http.MethodPut, "/teamgroups/mygroup", reqBody)
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -44,7 +46,7 @@ func (s *S) TestUpdateTeamGroup(c *check.C) {
 	c.Assert(recorder.Code, check.Equals, http.StatusOK)
 	err = conn.TeamGroups().Find(nil).All(&groups)
 	c.Assert(err, check.IsNil)
-	c.Assert(groups, check.DeepEquals, []TeamGroup{{Name: "mygroup", Teams: []string{"myteam", "mynewteam"}}})
+	c.Assert(groups, check.DeepEquals, []TeamGroup{{Name: "mygroup", Teams: []string{"myteam", "mynewteam"}, Pools: []string{}}})
 }
 
 func (s *S) TestListTeamGroups(c *check.C) {
@@ -52,11 +54,11 @@ func (s *S) TestListTeamGroups(c *check.C) {
 	c.Assert(err, check.IsNil)
 	conn.TeamGroups().Insert(
 		bson.M{"name": "group1", "teams": []string{"team1", "team2"}},
-		bson.M{"name": "group2", "teams": []string{"team3"}},
+		bson.M{"name": "group2", "teams": []string{"team3"}, "pools": []string{"pool1"}},
 	)
 	expected := []TeamGroup{
 		{Name: "group1", Teams: []string{"team1", "team2"}},
-		{Name: "group2", Teams: []string{"team3"}},
+		{Name: "group2", Teams: []string{"team3"}, Pools: []string{"pool1"}},
 	}
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodGet, "/teamgroups", nil)

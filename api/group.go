@@ -16,6 +16,7 @@ import (
 type TeamGroup struct {
 	Name  string
 	Teams []string
+	Pools []string
 }
 
 func FindTeamGroup(name string) (*TeamGroup, error) {
@@ -43,7 +44,8 @@ func updateTeamGroup(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 	teams := r.Form["teams"]
-	info, err := conn.TeamGroups().Upsert(bson.M{"name": name}, bson.M{"name": name, "teams": teams})
+	pools := r.Form["pools"]
+	info, err := conn.TeamGroups().Upsert(bson.M{"name": name}, bson.M{"name": name, "teams": teams, "pools": pools})
 	if err != nil {
 		return err
 	}
