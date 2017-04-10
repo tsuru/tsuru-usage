@@ -45,6 +45,11 @@ func (s *S) TestUpdatePlanCost(c *check.C) {
 }
 
 func (s *S) TestListPlanCosts(c *check.C) {
+	recorder := httptest.NewRecorder()
+	request, err := http.NewRequest(http.MethodGet, "/plans/cost", nil)
+	c.Assert(err, check.IsNil)
+	server(recorder, request)
+	c.Assert(recorder.Code, check.Equals, http.StatusNoContent)
 	p1 := plan.PlanCost{
 		Type:        plan.AppPlan,
 		Plan:        "small",
@@ -58,12 +63,12 @@ func (s *S) TestListPlanCosts(c *check.C) {
 		Cost:        0.5,
 		MeasureUnit: "dollars",
 	}
-	_, err := plan.Save(p1)
+	_, err = plan.Save(p1)
 	c.Assert(err, check.IsNil)
 	_, err = plan.Save(p2)
 	c.Assert(err, check.IsNil)
-	recorder := httptest.NewRecorder()
-	request, err := http.NewRequest(http.MethodGet, "/plans/cost", nil)
+	recorder = httptest.NewRecorder()
+	request, err = http.NewRequest(http.MethodGet, "/plans/cost", nil)
 	c.Assert(err, check.IsNil)
 	server(recorder, request)
 	var plans []plan.PlanCost
