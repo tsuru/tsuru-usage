@@ -48,6 +48,14 @@ func Conn() (*Storage, error) {
 
 func (s *Storage) TeamGroups() *storage.Collection {
 	c := s.Collection("team_groups")
-	c.EnsureIndex(mgo.Index{Key: []string{"name"}})
+	c.EnsureIndex(mgo.Index{Key: []string{"name"}, Unique: true})
+	return c
+}
+
+func (s *Storage) PlanCosts() *storage.Collection {
+	c := s.Collection("plan_costs")
+	c.EnsureIndex(mgo.Index{Key: []string{"plan", "service", "type"}, Unique: true})
+	c.EnsureIndexKey("type")
+	c.EnsureIndexKey("service")
 	return c
 }
