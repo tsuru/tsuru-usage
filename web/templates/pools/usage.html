@@ -14,10 +14,16 @@
 	<tbody>
 		{{range $item := .Usage}}
 			<tr>
-				<th scope="row">{{$item.Month}}</td>
+				<td>{{$item.Month}}</td>
 				<td>{{$item.Usage}}</td>
 			</tr>
 		{{end}}
 	</tbody>
+	<tfoot>
+		<tr>
+			<th scope="row">Total</th>
+			<th>{{.Total}}</th>
+		</tr>
+	</tfoot>
 </table>
 {{end}}

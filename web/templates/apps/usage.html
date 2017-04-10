@@ -18,7 +18,7 @@
 			{{range $i, $usage := $item.Usage}}
 				<tr>
 					{{if eq $i 0}}
-						<th scope="row" rowspan="{{$count}}">{{$item.Month}}</th>
+						<td rowspan="{{$count}}">{{$item.Month}}</td>
 					{{end}}
 					<td>{{$usage.Plan}}</td>
 					<td>{{$usage.Usage}}</td>
@@ -26,5 +26,11 @@
 			{{end}}
 		{{end}}
 	</tbody>
+	<tfoot>
+		<tr>
+			<th scope="row" colspan="2">Total</th>
+			<th>{{.Total}}</th>
+		</tr>
+	</tfoot>
 </table>
 {{end}}

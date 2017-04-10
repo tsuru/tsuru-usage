@@ -42,13 +42,23 @@ func poolUsageHandler(w http.ResponseWriter, r *http.Request) {
 		PoolName string
 		Year     string
 		Usage    []PoolUsage
+		Total    float64
 	}{
 		pool,
 		year,
 		usage,
+		totalPoolUsage(usage),
 	}
 	err = render(w, "web/templates/pools/usage.html", context)
 	if err != nil {
 		log.Println(err)
 	}
+}
+
+func totalPoolUsage(usage []PoolUsage) float64 {
+	var result float64
+	for _, item := range usage {
+		result += item.Usage
+	}
+	return result
 }

@@ -44,13 +44,25 @@ func appUsageHandler(w http.ResponseWriter, r *http.Request) {
 		Team  string
 		Year  string
 		Usage []AppUsage
+		Total float64
 	}{
 		team,
 		year,
 		usage,
+		totalAppUsage(usage),
 	}
 	err = render(w, "web/templates/apps/usage.html", context)
 	if err != nil {
 		log.Println(err)
 	}
+}
+
+func totalAppUsage(usage []AppUsage) float64 {
+	var result float64
+	for _, month := range usage {
+		for _, item := range month.Usage {
+			result += item.Usage
+		}
+	}
+	return result
 }
