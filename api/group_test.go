@@ -18,13 +18,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-func (s *S) SetUpTest(c *check.C) {
-	conn, err := db.Conn()
-	c.Assert(err, check.IsNil)
-	err = conn.TeamGroups().Database.DropDatabase()
-	c.Assert(err, check.IsNil)
-}
-
 func (s *S) TestUpdateTeamGroup(c *check.C) {
 	recorder := httptest.NewRecorder()
 	params := url.Values{}

@@ -9,6 +9,8 @@ import (
 
 	"github.com/tsuru/tsuru-usage/db"
 
+	"os"
+
 	check "gopkg.in/check.v1"
 )
 
@@ -22,9 +24,17 @@ func Test(t *testing.T) { check.TestingT(t) }
 
 func (s *S) SetUpTest(c *check.C) {
 	var err error
+	os.Setenv("MONGODB_DATABASE_NAME", "tsuru_usage_plan_tests")
 	s.conn, err = db.Conn()
 	c.Assert(err, check.IsNil)
 	s.conn.PlanCosts().Database.DropDatabase()
+}
+
+func (s *S) TearDownSuite(c *check.C) {
+	conn, err := db.Conn()
+	c.Assert(err, check.IsNil)
+	err = conn.TeamGroups().Database.DropDatabase()
+	c.Assert(err, check.IsNil)
 }
 
 func (s *S) TestListCosts(c *check.C) {

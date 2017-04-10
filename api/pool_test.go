@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"testing"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -16,12 +15,6 @@ import (
 	"github.com/tsuru/tsuru-usage/prom"
 	check "gopkg.in/check.v1"
 )
-
-var _ = check.Suite(&S{})
-
-type S struct{}
-
-func Test(t *testing.T) { check.TestingT(t) }
 
 func server(w http.ResponseWriter, r *http.Request) {
 	m := mux.NewRouter()

@@ -25,12 +25,24 @@ type PlanCost struct {
 }
 
 func ListCosts() ([]PlanCost, error) {
+	return listCosts(nil)
+}
+
+func ListServicesCosts() ([]PlanCost, error) {
+	return listCosts(bson.M{"type": ServicePlan})
+}
+
+func ListAppsCosts() ([]PlanCost, error) {
+	return listCosts(bson.M{"type": AppPlan})
+}
+
+func listCosts(query bson.M) ([]PlanCost, error) {
 	conn, err := db.Conn()
 	if err != nil {
 		return nil, err
 	}
 	var plans []PlanCost
-	err = conn.PlanCosts().Find(nil).All(&plans)
+	err = conn.PlanCosts().Find(query).All(&plans)
 	if err != nil {
 		return nil, err
 	}

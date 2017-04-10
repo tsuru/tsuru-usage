@@ -11,16 +11,22 @@ import (
 	"time"
 
 	"github.com/prometheus/common/model"
+	"github.com/tsuru/tsuru-usage/api/plan"
 	"github.com/tsuru/tsuru-usage/db"
 	"github.com/tsuru/tsuru-usage/prom"
 	check "gopkg.in/check.v1"
 )
 
 func (s *S) TestGetTeamUsageGroup(c *check.C) {
+	_, err := plan.Save(plan.PlanCost{Plan: "large", Type: plan.AppPlan, Cost: 3, MeasureUnit: "GB"})
+	c.Assert(err, check.IsNil)
 	expected := []TeamAppUsage{
 		{Team: "mygroup", Month: "January", Usage: []AppUsage{{Plan: "default", Usage: 10}}},
 		{Team: "mygroup", Month: "February", Usage: []AppUsage(nil)},
-		{Team: "mygroup", Month: "March", Usage: []AppUsage{{Plan: "default", Usage: 10}, {Plan: "large", Usage: 5}}},
+		{Team: "mygroup", Month: "March", Usage: []AppUsage{
+			{Plan: "default", Usage: 10},
+			{Plan: "large", Usage: 5, Cost: UsageCost{MeasureUnit: "GB", UnitCost: 3, TotalCost: 15}}},
+		},
 		{Team: "mygroup", Month: "April", Usage: []AppUsage(nil)},
 		{Team: "mygroup", Month: "May", Usage: []AppUsage(nil)},
 		{Team: "mygroup", Month: "June", Usage: []AppUsage(nil)},
@@ -91,10 +97,19 @@ func (s *S) TestGetTeamAppsUsage(c *check.C) {
 }
 
 func (s *S) TestGetTeamServicesUsage(c *check.C) {
+	_, err := plan.Save(plan.PlanCost{Plan: "default", Service: "serv1", Type: plan.ServicePlan, Cost: 3, MeasureUnit: "GB"})
+	c.Assert(err, check.IsNil)
+	_, err = plan.Save(plan.PlanCost{Plan: "default", Service: "serv2", Type: plan.ServicePlan, Cost: 1, MeasureUnit: "GB"})
+	c.Assert(err, check.IsNil)
 	expected := []TeamServiceUsage{
-		{Team: "myteam", Month: "January", Usage: []ServiceUsage{{Plan: "default", Service: "serv1", Usage: 10}}},
+		{Team: "myteam", Month: "January", Usage: []ServiceUsage{
+			{Plan: "default", Service: "serv1", Usage: 10, Cost: UsageCost{MeasureUnit: "GB", UnitCost: 3, TotalCost: 30}}},
+		},
 		{Team: "myteam", Month: "February", Usage: []ServiceUsage(nil)},
-		{Team: "myteam", Month: "March", Usage: []ServiceUsage{{Plan: "default", Service: "serv1", Usage: 10}, {Plan: "large", Service: "serv2", Usage: 5}}},
+		{Team: "myteam", Month: "March", Usage: []ServiceUsage{
+			{Plan: "default", Service: "serv1", Usage: 10, Cost: UsageCost{MeasureUnit: "GB", UnitCost: 3, TotalCost: 30}},
+			{Plan: "default", Service: "serv2", Usage: 5, Cost: UsageCost{MeasureUnit: "GB", UnitCost: 1, TotalCost: 5}}},
+		},
 		{Team: "myteam", Month: "April", Usage: []ServiceUsage(nil)},
 		{Team: "myteam", Month: "May", Usage: []ServiceUsage(nil)},
 		{Team: "myteam", Month: "June", Usage: []ServiceUsage(nil)},
@@ -108,7 +123,7 @@ func (s *S) TestGetTeamServicesUsage(c *check.C) {
 	fakeAPI := &prom.FakePrometheusAPI{}
 	vector := model.Vector{
 		&model.Sample{Metric: model.Metric{"plan": "default", "service": "serv1"}, Value: model.SampleValue(10)},
-		&model.Sample{Metric: model.Metric{"plan": "large", "service": "serv2"}, Value: model.SampleValue(5)},
+		&model.Sample{Metric: model.Metric{"plan": "default", "service": "serv2"}, Value: model.SampleValue(5)},
 	}
 	fakeAPI.Add("tsuru_usage_services{team=~\"myteam\"}", "30d", s.nextDay(time.March), vector, "service", "plan")
 	fakeAPI.Add("tsuru_usage_services{team=~\"myteam\"}", "30d", s.nextDay(time.January), model.Vector{vector[0]}, "service", "plan")

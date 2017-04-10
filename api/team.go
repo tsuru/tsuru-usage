@@ -14,6 +14,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/prometheus/common/model"
+	"github.com/tsuru/tsuru-usage/api/plan"
 	"github.com/tsuru/tsuru-usage/prom"
 )
 
@@ -21,6 +22,12 @@ const (
 	Services = ResourceType("services")
 	Apps     = ResourceType("apps")
 )
+
+type UsageCost struct {
+	MeasureUnit string
+	UnitCost    float64
+	TotalCost   float64
+}
 
 type ResourceType string
 
@@ -71,16 +78,30 @@ type TeamAppUsage struct {
 type AppUsage struct {
 	Plan  string
 	Usage float64
+	Cost  UsageCost
 }
 
 func teamAppsYearUsage(team string, year int, teamSelector string) ([]TeamAppUsage, error) {
+	plans, err := plan.ListAppsCosts()
+	if err != nil {
+		return nil, err
+	}
+	costMap := make(map[string]*plan.PlanCost)
+	for i := range plans {
+		costMap[plans[i].Plan] = &plans[i]
+	}
 	result := runForYear(monthlyUsage("tsuru_usage_units", teamSelector, year, "plan"))
 	usage := make([]TeamAppUsage, 12)
 	for k, v := range result {
 		var appUsage []AppUsage
 		for _, val := range v {
 			plan := val.Metric["plan"]
-			appUsage = append(appUsage, AppUsage{Plan: string(plan), Usage: float64(val.Value)})
+			usage := AppUsage{Plan: string(plan), Usage: float64(val.Value)}
+			cost := costMap[string(plan)]
+			if cost != nil {
+				usage.Cost = UsageCost{MeasureUnit: cost.MeasureUnit, UnitCost: cost.Cost, TotalCost: cost.Cost * float64(val.Value)}
+			}
+			appUsage = append(appUsage, usage)
 		}
 		usage[k-1] = TeamAppUsage{Team: team, Month: k.String(), Usage: appUsage}
 	}
@@ -97,9 +118,18 @@ type ServiceUsage struct {
 	Service string
 	Plan    string
 	Usage   float64
+	Cost    UsageCost
 }
 
 func teamServicesYearUsage(team string, year int, teamSelector string) ([]TeamServiceUsage, error) {
+	plans, err := plan.ListServicesCosts()
+	if err != nil {
+		return nil, err
+	}
+	costMap := make(map[string]*plan.PlanCost)
+	for i := range plans {
+		costMap[plans[i].Service+"/"+plans[i].Plan] = &plans[i]
+	}
 	result := runForYear(monthlyUsage("tsuru_usage_services", teamSelector, year, "service", "plan"))
 	usage := make([]TeamServiceUsage, 12)
 	for k, v := range result {
@@ -107,7 +137,16 @@ func teamServicesYearUsage(team string, year int, teamSelector string) ([]TeamSe
 		for _, val := range v {
 			plan := val.Metric["plan"]
 			service := val.Metric["service"]
-			servUsage = append(servUsage, ServiceUsage{Plan: string(plan), Service: string(service), Usage: float64(val.Value)})
+			cost := costMap[string(service)+"/"+string(plan)]
+			usage := ServiceUsage{
+				Plan:    string(plan),
+				Service: string(service),
+				Usage:   float64(val.Value),
+			}
+			if cost != nil {
+				usage.Cost = UsageCost{MeasureUnit: cost.MeasureUnit, UnitCost: cost.Cost, TotalCost: cost.Cost * float64(val.Value)}
+			}
+			servUsage = append(servUsage, usage)
 		}
 		usage[k-1] = TeamServiceUsage{Team: team, Month: k.String(), Usage: servUsage}
 	}
