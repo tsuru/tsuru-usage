@@ -35,7 +35,7 @@ type AppUsage struct {
 
 func appTeamListHandler(w http.ResponseWriter, r *http.Request) {
 	teams := []string{"team1", "team2", "team3", "team4"}
-	render(w, "web/templates/apps/index.html", teams)
+	render(w, "templates/apps/index.html", teams)
 }
 
 func appUsageHandler(w http.ResponseWriter, r *http.Request) {
@@ -63,7 +63,7 @@ func appUsageHandler(w http.ResponseWriter, r *http.Request) {
 		usage,
 		totalAppCost(usage),
 	}
-	err = render(w, "web/templates/apps/usage.html", context)
+	err = render(w, "templates/apps/usage.html", context)
 	if err != nil {
 		log.Println(err)
 	}

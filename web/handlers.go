@@ -9,5 +9,5 @@ import (
 )
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	render(w, "web/templates/index.html", nil)
+	render(w, "templates/index.html", nil)
 }

@@ -21,7 +21,7 @@ type PoolUsage struct {
 
 func poolListHandler(w http.ResponseWriter, r *http.Request) {
 	pools := []string{"staging", "prod", "workshop"}
-	render(w, "web/templates/pools/index.html", pools)
+	render(w, "templates/pools/index.html", pools)
 }
 
 func poolUsageHandler(w http.ResponseWriter, r *http.Request) {
@@ -49,7 +49,7 @@ func poolUsageHandler(w http.ResponseWriter, r *http.Request) {
 		usage,
 		totalPoolUsage(usage),
 	}
-	err = render(w, "web/templates/pools/usage.html", context)
+	err = render(w, "templates/pools/usage.html", context)
 	if err != nil {
 		log.Println(err)
 	}

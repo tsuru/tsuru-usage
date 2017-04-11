@@ -7,10 +7,16 @@ package web
 import (
 	"html/template"
 	"net/http"
+	"os"
+	"strings"
 )
 
 func render(w http.ResponseWriter, templatePath string, data interface{}) error {
-	t, err := template.ParseFiles(templatePath, "web/templates/base.html")
+	dir, _ := os.Getwd()
+	if !strings.HasSuffix(dir, "/web") {
+		dir += "/web"
+	}
+	t, err := template.ParseFiles(dir+"/"+templatePath, dir+"/templates/base.html")
 	if err != nil {
 		return err
 	}

@@ -36,7 +36,7 @@ type ServiceUsage struct {
 
 func serviceTeamListHandler(w http.ResponseWriter, r *http.Request) {
 	teams := []string{"team 1", "team 2", "team 3", "team 4"}
-	render(w, "web/templates/services/index.html", teams)
+	render(w, "templates/services/index.html", teams)
 }
 
 func serviceUsageHandler(w http.ResponseWriter, r *http.Request) {
@@ -64,7 +64,7 @@ func serviceUsageHandler(w http.ResponseWriter, r *http.Request) {
 		usage,
 		totalServiceCost(usage),
 	}
-	err = render(w, "web/templates/services/usage.html", context)
+	err = render(w, "templates/services/usage.html", context)
 	if err != nil {
 		log.Println(err)
 	}
