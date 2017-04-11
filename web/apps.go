@@ -9,9 +9,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 )
+
+var Client = &http.Client{}
 
 type AppCost struct {
 	MeasureUnit string
@@ -42,8 +45,9 @@ func appUsageHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	team := vars["team"]
 	year := vars["year"]
-	url := fmt.Sprintf("/api/apps/%s/%s", team, year)
-	response, err := http.Get(url)
+	host := os.Getenv("HOST")
+	url := fmt.Sprintf("%s/api/apps/%s/%s", host, team, year)
+	response, err := Client.Get(url)
 	if err != nil {
 		log.Printf("Error fetching %s: %s", url, err)
 		w.WriteHeader(http.StatusInternalServerError)
