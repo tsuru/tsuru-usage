@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 )
@@ -28,8 +29,9 @@ func poolUsageHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	pool := vars["name"]
 	year := vars["year"]
-	url := fmt.Sprintf("/api/pools/%s/%s", pool, year)
-	response, err := http.Get(url)
+	host := os.Getenv("HOST")
+	url := fmt.Sprintf("%s/api/pools/%s/%s", host, pool, year)
+	response, err := Client.Get(url)
 	if err != nil {
 		log.Printf("Error fetching %s: %s", url, err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -37,7 +39,12 @@ func poolUsageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer response.Body.Close()
 	var usage []PoolUsage
-	json.NewDecoder(response.Body).Decode(&usage)
+	err = json.NewDecoder(response.Body).Decode(&usage)
+	if err != nil {
+		log.Printf("Error decoding response body: %s", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	context := struct {
 		PoolName string
 		Year     string
