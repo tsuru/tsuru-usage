@@ -39,6 +39,12 @@
 			"revisionTime": "2016-04-24T11:30:07Z"
 		},
 		{
+			"checksumSHA1": "ynJSWoF6v+3zMnh9R0QmmG6iGV8=",
+			"path": "github.com/pkg/errors",
+			"revision": "ff09b135c25aae272398c51a07235b90a75aa4f0",
+			"revisionTime": "2017-03-16T20:15:38Z"
+		},
+		{
 			"checksumSHA1": "SMUvX2B8eoFd9wnPofwBKlN6btE=",
 			"path": "github.com/prometheus/client_golang/api/prometheus",
 			"revision": "738ed6c0b9b30ec936d4b74c1600ae76324efff5",
@@ -95,8 +101,8 @@
 		{
 			"checksumSHA1": "jlPMfwkYSDu6BpMWoc1j5bVlP7k=",
 			"path": "github.com/tsuru/tsuru/cmd/cmdtest",
-			"revision": "e3230204ef7f6db5b5f94f4ab1c1654d25c9c81d",
-			"revisionTime": "2017-04-11T13:12:38Z"
+			"revision": "d0b65c9d88e14c87ce4fb659cbd784148dd8e6f2",
+			"revisionTime": "2017-04-11T21:19:24Z"
 		},
 		{
 			"checksumSHA1": "qNo9+rhrLxGBdR55pwWCELmozNg=",
