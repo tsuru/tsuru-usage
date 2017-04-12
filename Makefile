@@ -15,4 +15,4 @@ linux-build:
 	GOOS=linux GOARCH=amd64 go build -o tsuru-usage
 
 deploy: linux-build
-	tsuru app-deploy -a tsuru-usage tsuru-usage Procfile tsuru.yaml
+	tsuru app-deploy -a tsuru-usage tsuru-usage Procfile tsuru.yaml static web/templates
