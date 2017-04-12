@@ -49,7 +49,7 @@ func (s *S) TestServiceUsage(c *check.C) {
 ]`
 	Client.Transport = &cmdtest.Transport{Message: data, Status: http.StatusOK}
 	recorder := httptest.NewRecorder()
-	request, err := http.NewRequest("GET", "/web/services/mygroup/2017/", nil)
+	request, err := http.NewRequest("GET", "/web/services/mygroup/2017", nil)
 	c.Assert(err, check.IsNil)
 	m := runServer()
 	c.Assert(m, check.NotNil)
@@ -75,7 +75,7 @@ func (s *S) TestServiceUsage(c *check.C) {
 func (s *S) TestServiceUsageAPIError(c *check.C) {
 	Client.Transport = &cmdtest.Transport{Status: http.StatusInternalServerError}
 	recorder := httptest.NewRecorder()
-	request, err := http.NewRequest("GET", "/web/services/mygroup/2017/", nil)
+	request, err := http.NewRequest("GET", "/web/services/mygroup/2017", nil)
 	c.Assert(err, check.IsNil)
 	m := runServer()
 	c.Assert(m, check.NotNil)
@@ -86,7 +86,7 @@ func (s *S) TestServiceUsageAPIError(c *check.C) {
 func (s *S) TestServiceUsageInvalidJSON(c *check.C) {
 	Client.Transport = &cmdtest.Transport{Message: "invalid", Status: http.StatusOK}
 	recorder := httptest.NewRecorder()
-	request, err := http.NewRequest("GET", "/web/services/mygroup/2017/", nil)
+	request, err := http.NewRequest("GET", "/web/services/mygroup/2017", nil)
 	c.Assert(err, check.IsNil)
 	m := runServer()
 	c.Assert(m, check.NotNil)

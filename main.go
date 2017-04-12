@@ -54,7 +54,7 @@ func runServer(port string) {
 }
 
 func router() http.Handler {
-	r := mux.NewRouter()
+	r := mux.NewRouter().StrictSlash(true)
 	apiRouter := r.PathPrefix("/api").Subrouter()
 	api.Router(apiRouter)
 	webRouter := r.PathPrefix("/web").Subrouter()
