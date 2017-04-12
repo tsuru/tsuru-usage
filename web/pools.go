@@ -29,7 +29,7 @@ func poolUsageHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	pool := vars["name"]
 	year := vars["year"]
-	host := os.Getenv("HOST")
+	host := os.Getenv("API_HOST")
 	url := fmt.Sprintf("%s/api/pools/%s/%s", host, pool, year)
 	response, err := Client.Get(url)
 	if err != nil || response.StatusCode != http.StatusOK {

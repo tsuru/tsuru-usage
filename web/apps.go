@@ -45,7 +45,7 @@ func appUsageHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	team := vars["team"]
 	year := vars["year"]
-	host := os.Getenv("HOST")
+	host := os.Getenv("API_HOST")
 	url := fmt.Sprintf("%s/api/apps/%s/%s", host, team, year)
 	response, err := Client.Get(url)
 	if err != nil || response.StatusCode != http.StatusOK {
