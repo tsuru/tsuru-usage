@@ -48,14 +48,19 @@ func appUsageHandler(w http.ResponseWriter, r *http.Request) {
 	host := os.Getenv("HOST")
 	url := fmt.Sprintf("%s/api/apps/%s/%s", host, team, year)
 	response, err := Client.Get(url)
-	if err != nil {
+	if err != nil || response.StatusCode != http.StatusOK {
 		log.Printf("Error fetching %s: %s", url, err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	defer response.Body.Close()
 	var usage []AppUsage
-	json.NewDecoder(response.Body).Decode(&usage)
+	err = json.NewDecoder(response.Body).Decode(&usage)
+	if err != nil {
+		log.Printf("Error decoding response body: %s", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	context := struct {
 		Team  string
 		Year  string

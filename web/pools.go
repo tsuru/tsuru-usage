@@ -32,7 +32,7 @@ func poolUsageHandler(w http.ResponseWriter, r *http.Request) {
 	host := os.Getenv("HOST")
 	url := fmt.Sprintf("%s/api/pools/%s/%s", host, pool, year)
 	response, err := Client.Get(url)
-	if err != nil {
+	if err != nil || response.StatusCode != http.StatusOK {
 		log.Printf("Error fetching %s: %s", url, err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return

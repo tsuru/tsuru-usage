@@ -47,3 +47,25 @@ func (s *S) TestPoolUsage(c *check.C) {
 	c.Assert(strings.Contains(body, "Total"), check.Equals, true)
 	c.Assert(strings.Contains(body, "19"), check.Equals, true)
 }
+
+func (s *S) TestPoolUsageAPIError(c *check.C) {
+	Client.Transport = &cmdtest.Transport{Status: http.StatusInternalServerError}
+	recorder := httptest.NewRecorder()
+	request, err := http.NewRequest("GET", "/web/pools/mypool/2017/", nil)
+	c.Assert(err, check.IsNil)
+	m := runServer()
+	c.Assert(m, check.NotNil)
+	m.ServeHTTP(recorder, request)
+	c.Assert(recorder.Code, check.Equals, http.StatusInternalServerError)
+}
+
+func (s *S) TestPoolUsageInvalidJSON(c *check.C) {
+	Client.Transport = &cmdtest.Transport{Message: "invalid", Status: http.StatusOK}
+	recorder := httptest.NewRecorder()
+	request, err := http.NewRequest("GET", "/web/pools/mypool/2017/", nil)
+	c.Assert(err, check.IsNil)
+	m := runServer()
+	c.Assert(m, check.NotNil)
+	m.ServeHTTP(recorder, request)
+	c.Assert(recorder.Code, check.Equals, http.StatusInternalServerError)
+}
