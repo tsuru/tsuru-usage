@@ -8,19 +8,11 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
-	"testing"
 
-	"github.com/gorilla/mux"
 	"github.com/tsuru/tsuru/cmd/cmdtest"
 
 	"gopkg.in/check.v1"
 )
-
-type S struct{}
-
-var _ = check.Suite(&S{})
-
-func Test(t *testing.T) { check.TestingT(t) }
 
 func (s *S) TestAppUsage(c *check.C) {
 	data := `[
@@ -73,10 +65,4 @@ func (s *S) TestAppUsage(c *check.C) {
 	c.Assert(strings.Contains(body, "3 GB"), check.Equals, true)
 	c.Assert(strings.Contains(body, "6 GB"), check.Equals, true)
 	c.Assert(strings.Contains(body, "16 GB"), check.Equals, true)
-}
-
-func runServer() *mux.Router {
-	r := mux.NewRouter()
-	Router(r.PathPrefix("/web").Subrouter())
-	return r
 }
