@@ -60,6 +60,52 @@ func (s *S) TestListCosts(c *check.C) {
 	c.Assert(plans, check.DeepEquals, []PlanCost{plan1, plan2})
 }
 
+func (s *S) TestListServicesCosts(c *check.C) {
+	plan1 := PlanCost{
+		Service:     "service",
+		Plan:        "small",
+		Type:        ServicePlan,
+		Cost:        0.5,
+		MeasureUnit: "dollars",
+	}
+	_, err := Save(plan1)
+	c.Assert(err, check.IsNil)
+	plan2 := PlanCost{
+		Plan:        "small",
+		Type:        AppPlan,
+		Cost:        1,
+		MeasureUnit: "dollars",
+	}
+	_, err = Save(plan2)
+	c.Assert(err, check.IsNil)
+	plans, err := ListServicesCosts()
+	c.Assert(err, check.IsNil)
+	c.Assert(plans, check.DeepEquals, []PlanCost{plan1})
+}
+
+func (s *S) TestListAppsCosts(c *check.C) {
+	plan1 := PlanCost{
+		Service:     "service",
+		Plan:        "small",
+		Type:        ServicePlan,
+		Cost:        0.5,
+		MeasureUnit: "dollars",
+	}
+	_, err := Save(plan1)
+	c.Assert(err, check.IsNil)
+	plan2 := PlanCost{
+		Plan:        "small",
+		Type:        AppPlan,
+		Cost:        1,
+		MeasureUnit: "dollars",
+	}
+	_, err = Save(plan2)
+	c.Assert(err, check.IsNil)
+	plans, err := ListAppsCosts()
+	c.Assert(err, check.IsNil)
+	c.Assert(plans, check.DeepEquals, []PlanCost{plan2})
+}
+
 func (s *S) TestSave(c *check.C) {
 	plan1 := PlanCost{
 		Service:     "service",
