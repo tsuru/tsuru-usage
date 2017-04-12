@@ -93,6 +93,12 @@
 			"revisionTime": "2017-02-16T22:32:56Z"
 		},
 		{
+			"checksumSHA1": "jlPMfwkYSDu6BpMWoc1j5bVlP7k=",
+			"path": "github.com/tsuru/tsuru/cmd/cmdtest",
+			"revision": "e3230204ef7f6db5b5f94f4ab1c1654d25c9c81d",
+			"revisionTime": "2017-04-11T13:12:38Z"
+		},
+		{
 			"checksumSHA1": "qNo9+rhrLxGBdR55pwWCELmozNg=",
 			"path": "github.com/tsuru/tsuru/db/storage",
 			"revision": "a73846f1f6c8dd03cddeea6d96874b8eb03b3fe7",
