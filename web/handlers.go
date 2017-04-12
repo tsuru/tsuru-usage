@@ -4,9 +4,7 @@
 
 package web
 
-import (
-	"net/http"
-)
+import "net/http"
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	render(w, "templates/index.html", nil)
