@@ -14,18 +14,19 @@ import (
 	"gopkg.in/check.v1"
 )
 
-func (s *S) TestAppUsage(c *check.C) {
+func (s *S) TestServiceUsage(c *check.C) {
 	data := `[
 	{
 		"Month": "January",
 		"Usage": [
 			{
-				"Plan": "default plan",
-				"Usage": 5,
+				"Service": "service 1",
+				"Plan": "plan 1",
+				"Usage": 11,
 				"Cost": {
 					"MeasureUnit": "GB",
 					"UnitCost": 2,
-					"TotalCost": 10
+					"TotalCost": 22
 				}
 			}
 		]
@@ -34,12 +35,13 @@ func (s *S) TestAppUsage(c *check.C) {
 		"Month": "February",
 		"Usage": [
 			{
-				"Plan": "planb",
-				"Usage": 2,
+				"Service": "service 2",
+				"Plan": "plan 2",
+				"Usage": 4,
 				"Cost": {
 					"MeasureUnit": "GB",
 					"UnitCost": 3,
-					"TotalCost": 6
+					"TotalCost": 12
 				}
 			}
 		]
@@ -47,7 +49,7 @@ func (s *S) TestAppUsage(c *check.C) {
 ]`
 	Client.Transport = &cmdtest.Transport{Message: data, Status: http.StatusOK}
 	recorder := httptest.NewRecorder()
-	request, err := http.NewRequest("GET", "/web/apps/mygroup/2017/", nil)
+	request, err := http.NewRequest("GET", "/web/services/mygroup/2017/", nil)
 	c.Assert(err, check.IsNil)
 	m := runServer()
 	c.Assert(m, check.NotNil)
@@ -55,22 +57,25 @@ func (s *S) TestAppUsage(c *check.C) {
 	c.Assert(recorder.Code, check.Equals, http.StatusOK)
 	body := recorder.Body.String()
 	c.Assert(strings.Contains(body, "January"), check.Equals, true)
-	c.Assert(strings.Contains(body, "default plan"), check.Equals, true)
-	c.Assert(strings.Contains(body, "5"), check.Equals, true)
+	c.Assert(strings.Contains(body, "plan 1"), check.Equals, true)
+	c.Assert(strings.Contains(body, "11"), check.Equals, true)
 	c.Assert(strings.Contains(body, "2 GB"), check.Equals, true)
-	c.Assert(strings.Contains(body, "10 GB"), check.Equals, true)
+	c.Assert(strings.Contains(body, "22 GB"), check.Equals, true)
 	c.Assert(strings.Contains(body, "February"), check.Equals, true)
-	c.Assert(strings.Contains(body, "planb"), check.Equals, true)
-	c.Assert(strings.Contains(body, "2"), check.Equals, true)
+	c.Assert(strings.Contains(body, "plan 2"), check.Equals, true)
+	c.Assert(strings.Contains(body, "4"), check.Equals, true)
 	c.Assert(strings.Contains(body, "3 GB"), check.Equals, true)
-	c.Assert(strings.Contains(body, "6 GB"), check.Equals, true)
-	c.Assert(strings.Contains(body, "16 GB"), check.Equals, true)
+	c.Assert(strings.Contains(body, "12 GB"), check.Equals, true)
+	c.Assert(strings.Contains(body, "Total"), check.Equals, true)
+	c.Assert(strings.Contains(body, "15"), check.Equals, true)
+	c.Assert(strings.Contains(body, "5 GB"), check.Equals, true)
+	c.Assert(strings.Contains(body, "34 GB"), check.Equals, true)
 }
 
-func (s *S) TestAppUsageAPIError(c *check.C) {
+func (s *S) TestServiceUsageAPIError(c *check.C) {
 	Client.Transport = &cmdtest.Transport{Status: http.StatusInternalServerError}
 	recorder := httptest.NewRecorder()
-	request, err := http.NewRequest("GET", "/web/apps/mygroup/2017/", nil)
+	request, err := http.NewRequest("GET", "/web/services/mygroup/2017/", nil)
 	c.Assert(err, check.IsNil)
 	m := runServer()
 	c.Assert(m, check.NotNil)
@@ -78,10 +83,10 @@ func (s *S) TestAppUsageAPIError(c *check.C) {
 	c.Assert(recorder.Code, check.Equals, http.StatusInternalServerError)
 }
 
-func (s *S) TestAppUsageInvalidJSON(c *check.C) {
+func (s *S) TestServiceUsageInvalidJSON(c *check.C) {
 	Client.Transport = &cmdtest.Transport{Message: "invalid", Status: http.StatusOK}
 	recorder := httptest.NewRecorder()
-	request, err := http.NewRequest("GET", "/web/apps/mygroup/2017/", nil)
+	request, err := http.NewRequest("GET", "/web/services/mygroup/2017/", nil)
 	c.Assert(err, check.IsNil)
 	m := runServer()
 	c.Assert(m, check.NotNil)
