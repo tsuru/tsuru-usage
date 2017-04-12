@@ -1,5 +1,7 @@
 # Tsuru Usage
 
+[![Build Status](https://travis-ci.org/tsuru/tsuru-usage.png?branch=master)](https://travis-ci.org/tsuru/tsuru-usage)
+
 This project aims to provide an easy way to expose some resource usage about a tsuru installation. The project contains an Procfile and this code can be ran as an application on tsuru.
 
 This app will expose usage metrics on a `/metrics` endpoint. Two main metrics are available:
