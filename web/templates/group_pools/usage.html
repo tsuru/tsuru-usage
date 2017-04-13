@@ -12,7 +12,6 @@
     </tr>
   </thead>
   <tbody>
-    {{$total := .TotalUsage}}
     {{range $item := .Usage}}
       {{$count := len $item.Usage}}
       {{range $i, $usage := $item.Usage}}
@@ -20,10 +19,10 @@
           {{if eq $i 0}}
             <td rowspan="{{$count}}">{{$item.Month}}</td>
           {{end}}
-          <td>{{$usage.Pool}}</td>
+          <td><a href="/web/pools/{{$usage.Pool}}/{{$.Year}}">{{$usage.Pool}}</a></td>
           <td>{{$usage.Usage}}</td>
           {{if eq $i 0}}
-            <td rowspan="{{$count}}">{{index $total.TotalPerMonth $item.Month}}</td>
+            <td rowspan="{{$count}}">{{index $.TotalUsage.TotalPerMonth $item.Month}}</td>
           {{end}}
         </tr>
       {{end}}
@@ -32,7 +31,7 @@
   <tfoot>
     <tr>
       <th scope="row" colspan="3">Total</th>
-      <th>{{$total.Total}}</th>
+      <th>{{.TotalUsage.Total}}</th>
     </tr>
   </tfoot>
 </table>
