@@ -43,6 +43,16 @@ func (s *S) TestServiceUsage(c *check.C) {
 					"UnitCost": 3,
 					"TotalCost": 12
 				}
+			},
+			{
+				"Service": "service 2",
+				"Plan": "plan 3",
+				"Usage": 6,
+				"Cost": {
+					"MeasureUnit": "GB",
+					"UnitCost": 1,
+					"TotalCost": 6
+				}
 			}
 		]
 	}
@@ -66,9 +76,14 @@ func (s *S) TestServiceUsage(c *check.C) {
 	c.Assert(strings.Contains(body, "4"), check.Equals, true)
 	c.Assert(strings.Contains(body, "3 GB"), check.Equals, true)
 	c.Assert(strings.Contains(body, "12 GB"), check.Equals, true)
+	c.Assert(strings.Contains(body, "plan 3"), check.Equals, true)
+	c.Assert(strings.Contains(body, "6"), check.Equals, true)
+	c.Assert(strings.Contains(body, "1 GB"), check.Equals, true)
+	c.Assert(strings.Contains(body, "6 GB"), check.Equals, true)
+	c.Assert(strings.Contains(body, "18 GB"), check.Equals, true)
 	c.Assert(strings.Contains(body, "Total"), check.Equals, true)
-	c.Assert(strings.Contains(body, "15"), check.Equals, true)
-	c.Assert(strings.Contains(body, "34 GB"), check.Equals, true)
+	c.Assert(strings.Contains(body, "21"), check.Equals, true)
+	c.Assert(strings.Contains(body, "40 GB"), check.Equals, true)
 }
 
 func (s *S) TestServiceUsageAPIError(c *check.C) {

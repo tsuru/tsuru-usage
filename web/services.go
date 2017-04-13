@@ -23,7 +23,8 @@ type ServiceCost struct {
 
 type TotalServiceCost struct {
 	ServiceCost
-	Usage float64
+	Usage        float64
+	CostPerMonth map[string]float64
 }
 
 type ServiceUsage struct {
@@ -86,7 +87,7 @@ func serviceUsageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func totalServiceCost(usage []ServiceUsage) TotalServiceCost {
-	total := TotalServiceCost{}
+	total := TotalServiceCost{CostPerMonth: make(map[string]float64)}
 	for _, month := range usage {
 		for _, item := range month.Usage {
 			if item.Cost.MeasureUnit != "" && total.MeasureUnit == "" {
@@ -94,6 +95,7 @@ func totalServiceCost(usage []ServiceUsage) TotalServiceCost {
 			}
 			total.TotalCost += item.Cost.TotalCost
 			total.Usage += item.Usage
+			total.CostPerMonth[month.Month] += item.Cost.TotalCost
 		}
 	}
 	return total
