@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -42,10 +43,15 @@ func serviceTeamListHandler(w http.ResponseWriter, r *http.Request) {
 
 func serviceUsageHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	team := vars["team"]
+	teamOrGroup := vars["teamOrGroup"]
 	year := vars["year"]
+	group, _ := strconv.ParseBool(r.FormValue("group"))
+	groupingType := "team"
+	if group {
+		groupingType = "group"
+	}
 	host := os.Getenv("API_HOST")
-	url := fmt.Sprintf("%s/api/services/%s/%s", host, team, year)
+	url := fmt.Sprintf("%s/api/services/%s/%s?group=%t", host, teamOrGroup, year, group)
 	response, err := Client.Get(url)
 	if err != nil || response.StatusCode != http.StatusOK {
 		log.Printf("Error fetching %s: %s", url, err)
@@ -61,12 +67,14 @@ func serviceUsageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	context := struct {
-		Team  string
-		Year  string
-		Usage []ServiceUsage
-		Total TotalServiceCost
+		TeamOrGroup  string
+		GroupingType string
+		Year         string
+		Usage        []ServiceUsage
+		Total        TotalServiceCost
 	}{
-		team,
+		teamOrGroup,
+		groupingType,
 		year,
 		usage,
 		totalServiceCost(usage),

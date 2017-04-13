@@ -49,7 +49,7 @@ func (s *S) TestServiceUsage(c *check.C) {
 ]`
 	Client.Transport = &cmdtest.Transport{Message: data, Status: http.StatusOK}
 	recorder := httptest.NewRecorder()
-	request, err := http.NewRequest("GET", "/web/services/mygroup/2017", nil)
+	request, err := http.NewRequest("GET", "/web/services/mygroup/2017?group=true", nil)
 	c.Assert(err, check.IsNil)
 	m := runServer()
 	c.Assert(m, check.NotNil)

@@ -33,5 +33,5 @@ func Router(m *mux.Router) {
 	m.HandleFunc("/apps", appTeamListHandler).Methods("GET")
 	m.HandleFunc("/apps/{teamOrGroup}/{year}", appUsageHandler).Methods("GET")
 	m.HandleFunc("/services", serviceTeamListHandler).Methods("GET")
-	m.HandleFunc("/services/{team}/{year}", serviceUsageHandler).Methods("GET")
+	m.HandleFunc("/services/{teamOrGroup}/{year}", serviceUsageHandler).Methods("GET")
 }
