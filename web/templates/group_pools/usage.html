@@ -1,0 +1,36 @@
+{{define "content"}}
+<div class="container mt-3">
+	<a href="/web/pools">&lt;&lt; Back</a>
+</div>
+
+<h1 class="my-4">Tsuru usage for {{.Group}} in {{.Year}}</h1>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Month</th>
+      <th>Pool</th>
+      <th>Usage</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{range $item := .Usage}}
+      {{$count := len $item.Usage}}
+      {{range $i, $usage := $item.Usage}}
+        <tr>
+          {{if eq $i 0}}
+            <td rowspan="{{$count}}">{{$item.Month}}</td>
+          {{end}}
+          <td>{{$usage.Pool}}</td>
+          <td>{{$usage.Usage}}</td>
+        </tr>
+      {{end}}
+    {{end}}
+  </tbody>
+  <tfoot>
+    <tr>
+      <th scope="row" colspan="2">Total</th>
+      <th>{{.TotalUsage}}</th>
+    </tr>
+  </tfoot>
+</table>
+{{end}}
