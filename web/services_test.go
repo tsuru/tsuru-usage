@@ -68,7 +68,6 @@ func (s *S) TestServiceUsage(c *check.C) {
 	c.Assert(strings.Contains(body, "12 GB"), check.Equals, true)
 	c.Assert(strings.Contains(body, "Total"), check.Equals, true)
 	c.Assert(strings.Contains(body, "15"), check.Equals, true)
-	c.Assert(strings.Contains(body, "5 GB"), check.Equals, true)
 	c.Assert(strings.Contains(body, "34 GB"), check.Equals, true)
 }
 

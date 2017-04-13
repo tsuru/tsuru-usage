@@ -92,7 +92,6 @@ func totalServiceCost(usage []ServiceUsage) TotalServiceCost {
 			if item.Cost.MeasureUnit != "" && total.MeasureUnit == "" {
 				total.MeasureUnit = item.Cost.MeasureUnit
 			}
-			total.UnitCost += item.Cost.UnitCost
 			total.TotalCost += item.Cost.TotalCost
 			total.Usage += item.Usage
 		}
