@@ -53,6 +53,7 @@ func (s *S) TestGroupPoolUsage(c *check.C) {
 	c.Assert(strings.Contains(body, "5"), check.Equals, true)
 	c.Assert(strings.Contains(body, "pool2"), check.Equals, true)
 	c.Assert(strings.Contains(body, "7"), check.Equals, true)
+	c.Assert(strings.Contains(body, "12"), check.Equals, true)
 	c.Assert(strings.Contains(body, "February"), check.Equals, true)
 	c.Assert(strings.Contains(body, "pool2"), check.Equals, true)
 	c.Assert(strings.Contains(body, "2"), check.Equals, true)

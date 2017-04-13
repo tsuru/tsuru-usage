@@ -3,16 +3,18 @@
 	<a href="/web/pools">&lt;&lt; Back</a>
 </div>
 
-<h1 class="my-4">Tsuru usage for {{.Group}} in {{.Year}}</h1>
+<h1 class="my-4">Tsuru usage for group <strong>{{.Group}}</strong> in {{.Year}}</h1>
 <table class="table table-hover">
   <thead>
     <tr>
       <th>Month</th>
       <th>Pool</th>
-      <th>Usage</th>
+      <th>Usage per pool</th>
+      <th>Usage per month</th>
     </tr>
   </thead>
   <tbody>
+    {{$total := .TotalUsage}}
     {{range $item := .Usage}}
       {{$count := len $item.Usage}}
       {{range $i, $usage := $item.Usage}}
@@ -22,14 +24,17 @@
           {{end}}
           <td>{{$usage.Pool}}</td>
           <td>{{$usage.Usage}}</td>
+          {{if eq $i 0}}
+            <td rowspan="{{$count}}">{{index $total.TotalPerMonth $item.Month}}</td>
+          {{end}}
         </tr>
       {{end}}
     {{end}}
   </tbody>
   <tfoot>
     <tr>
-      <th scope="row" colspan="2">Total</th>
-      <th>{{.TotalUsage}}</th>
+      <th scope="row" colspan="3">Total</th>
+      <th>{{$total.Total}}</th>
     </tr>
   </tfoot>
 </table>
