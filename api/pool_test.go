@@ -64,25 +64,25 @@ func (s *S) TestGetPoolUsageForGroup(c *check.C) {
 	err = conn.TeamGroups().Insert(TeamGroup{Name: "mygroup", Pools: []string{"mypool", "mypool2"}})
 	c.Assert(err, check.IsNil)
 	expected := []TeamPoolUsage{
-		{Team: "mygroup", Month: "January", Usage: []PoolUsage{
-			{Pool: "mypool", Month: "January", Usage: 10},
-			{Pool: "mypool2", Month: "January", Usage: 5},
+		{Month: "January", Usage: []PoolUsage{
+			{Pool: "mypool", Usage: 10},
+			{Pool: "mypool2", Usage: 5},
 		}},
-		{Team: "mygroup", Month: "February", Usage: nil},
-		{Team: "mygroup", Month: "March", Usage: []PoolUsage{
-			{Pool: "mypool", Month: "March", Usage: 10},
-			{Pool: "mypool2", Month: "March", Usage: 5},
+		{Month: "February", Usage: nil},
+		{Month: "March", Usage: []PoolUsage{
+			{Pool: "mypool", Usage: 10},
+			{Pool: "mypool2", Usage: 5},
 		}},
-		{Team: "mygroup", Month: "April", Usage: nil},
-		{Team: "mygroup", Month: "May", Usage: nil},
-		{Team: "mygroup", Month: "June", Usage: nil},
-		{Team: "mygroup", Month: "July", Usage: nil},
-		{Team: "mygroup", Month: "August", Usage: nil},
-		{Team: "mygroup", Month: "September", Usage: nil},
-		{Team: "mygroup", Month: "October", Usage: nil},
-		{Team: "mygroup", Month: "November", Usage: nil},
-		{Team: "mygroup", Month: "December", Usage: []PoolUsage{
-			{Pool: "mypool2", Month: "December", Usage: 5},
+		{Month: "April", Usage: nil},
+		{Month: "May", Usage: nil},
+		{Month: "June", Usage: nil},
+		{Month: "July", Usage: nil},
+		{Month: "August", Usage: nil},
+		{Month: "September", Usage: nil},
+		{Month: "October", Usage: nil},
+		{Month: "November", Usage: nil},
+		{Month: "December", Usage: []PoolUsage{
+			{Pool: "mypool2", Usage: 5},
 		}},
 	}
 	fakeAPI := &prom.FakePrometheusAPI{}

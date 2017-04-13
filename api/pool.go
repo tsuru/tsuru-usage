@@ -18,14 +18,13 @@ import (
 )
 
 type TeamPoolUsage struct {
-	Team  string
 	Month string
 	Usage []PoolUsage
 }
 
 type PoolUsage struct {
 	Pool  string
-	Month string
+	Month string `json:",omitempty"`
 	Usage float64
 }
 
@@ -76,9 +75,9 @@ func teamPoolsYearUsage(team string, year int, selector string) ([]TeamPoolUsage
 		for _, val := range v {
 			pool := string(val.Metric["pool"])
 			value := float64(val.Value)
-			poolUsage = append(poolUsage, PoolUsage{Pool: pool, Month: k.String(), Usage: value})
+			poolUsage = append(poolUsage, PoolUsage{Pool: pool, Usage: value})
 		}
-		usage[k-1] = TeamPoolUsage{Team: team, Month: k.String(), Usage: poolUsage}
+		usage[k-1] = TeamPoolUsage{Month: k.String(), Usage: poolUsage}
 	}
 	return usage, nil
 }
