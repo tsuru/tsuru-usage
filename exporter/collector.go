@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/tsuru/tsuru-usage/tsuru"
 )
 
 var (
@@ -37,9 +38,8 @@ func init() {
 	prometheus.MustRegister(collectHist)
 }
 
-func Register(tsuruEndpoint, tsuruToken string, services []string) {
-	tsuruClient := newClient(tsuruEndpoint, tsuruToken)
-	prometheus.MustRegister(&TsuruCollector{client: tsuruClient, services: services})
+func Register(tsuruAPI tsuru.TsuruAPI, services []string) {
+	prometheus.MustRegister(&TsuruCollector{client: &tsuruCollectorClient{api: tsuruAPI}, services: services})
 }
 
 func (c *TsuruCollector) Describe(ch chan<- *prometheus.Desc) {

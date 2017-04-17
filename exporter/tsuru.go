@@ -5,21 +5,18 @@
 package exporter
 
 import (
-	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
-	"time"
+
+	"github.com/tsuru/tsuru-usage/tsuru"
 )
 
 type RequestDoer interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
-type tsuruClient struct {
-	addr       string
-	token      string
-	httpClient RequestDoer
+type tsuruCollectorClient struct {
+	api tsuru.TsuruAPI
 }
 
 type unitCount struct {
@@ -30,49 +27,13 @@ type unitCount struct {
 	count int
 }
 
-type nodeResult struct {
-	Nodes []node
-}
-
-type node struct {
-	Metadata nodeMetadata
-}
-type nodeMetadata struct {
-	Pool string
-}
-
-type app struct {
-	Name      string
-	Plan      plan
-	Units     []unit
-	Pool      string
-	TeamOwner string
-}
-
-type unit struct {
-	Status string
-}
-
-type plan struct {
-	Name string
-}
-
 type serviceInstance struct {
-	ServiceName string
-	Name        string
-	PlanName    string
-	TeamOwner   string
-	Info        map[string]string
-	count       int
+	tsuru.ServiceInstance
+	count int
 }
 
-func newClient(addr, token string) *tsuruClient {
-	return &tsuruClient{addr: addr, token: token, httpClient: &http.Client{Timeout: 10 * time.Second}}
-}
-
-func (c *tsuruClient) fetchUnitsCount() ([]unitCount, error) {
-	var apps []app
-	err := c.fetchList("apps", &apps)
+func (c *tsuruCollectorClient) fetchUnitsCount() ([]unitCount, error) {
+	apps, err := c.api.ListApps()
 	if err != nil {
 		return nil, err
 	}
@@ -89,52 +50,33 @@ func (c *tsuruClient) fetchUnitsCount() ([]unitCount, error) {
 	return counts, nil
 }
 
-func (c *tsuruClient) fetchNodesCount() (map[string]int, error) {
-	var result nodeResult
-	err := c.fetchList("node", &result)
+func (c *tsuruCollectorClient) fetchNodesCount() (map[string]int, error) {
+	nodes, err := c.api.ListNodes()
 	if err != nil {
 		return nil, err
 	}
 	count := make(map[string]int)
-	for _, n := range result.Nodes {
+	for _, n := range nodes {
 		count[n.Metadata.Pool]++
 	}
 	return count, nil
 }
 
-func (c *tsuruClient) fetchServicesInstances(service string) ([]serviceInstance, error) {
-	var result []serviceInstance
-	err := c.fetchList("services/"+service, &result)
+func (c *tsuruCollectorClient) fetchServicesInstances(service string) ([]serviceInstance, error) {
+	instances, err := c.api.ListServiceInstances(service)
 	if err != nil {
 		return nil, err
 	}
-	for i := range result {
-		result[i].count = 1
-		if str := result[i].Info["Instances"]; str != "" {
+	serviceInstances := make([]serviceInstance, len(instances))
+	for i := range instances {
+		count := 1
+		if str := instances[i].Info["Instances"]; str != "" {
 			if v, err := strconv.Atoi(str); err == nil {
-				result[i].count = v
+				count = v
 			}
 		}
+		serviceInstances[i].ServiceInstance = instances[i]
+		serviceInstances[i].count = count
 	}
-	return result, nil
-}
-
-func (c *tsuruClient) fetchList(path string, v interface{}) error {
-	request, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s", c.addr, path), nil)
-	if err != nil {
-		return err
-	}
-	request.Header.Set("Authorization", "bearer "+c.token)
-	response, err := c.httpClient.Do(request)
-	if err != nil {
-		return err
-	}
-	defer response.Body.Close()
-	if response.StatusCode == http.StatusNoContent {
-		return nil
-	}
-	if response.StatusCode != http.StatusOK {
-		return fmt.Errorf("returned non OK status code: %s", response.Status)
-	}
-	return json.NewDecoder(response.Body).Decode(v)
+	return serviceInstances, nil
 }

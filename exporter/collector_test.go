@@ -9,6 +9,7 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	dto "github.com/prometheus/client_model/go"
+	"github.com/tsuru/tsuru-usage/tsuru"
 )
 
 type fakeClient struct {
@@ -78,8 +79,8 @@ func TestCollectNodes(t *testing.T) {
 
 func TestCollectInstances(t *testing.T) {
 	instances := []serviceInstance{
-		{ServiceName: "rpaas", Name: "instance-rpaas", PlanName: "plan1", TeamOwner: "myteam", Info: map[string]string{"Address": "127.0.0.1", "Instances": "2"}, count: 2},
-		{ServiceName: "rpaas", Name: "instance-rpaas", TeamOwner: "myteam", Info: map[string]string{"Address": "127.0.0.1"}, count: 1},
+		{ServiceInstance: tsuru.ServiceInstance{ServiceName: "rpaas", Name: "instance-rpaas", PlanName: "plan1", TeamOwner: "myteam", Info: map[string]string{"Address": "127.0.0.1", "Instances": "2"}}, count: 2},
+		{ServiceInstance: tsuru.ServiceInstance{ServiceName: "rpaas", Name: "instance-rpaas", TeamOwner: "myteam", Info: map[string]string{"Address": "127.0.0.1"}}, count: 1},
 	}
 	expectedLabels := []map[string]string{
 		{"service": "rpaas", "instance": "instance-rpaas", "plan": "plan1", "team": "myteam"},

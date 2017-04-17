@@ -5,36 +5,21 @@
 package exporter
 
 import (
-	"bytes"
-	"io/ioutil"
-	"net/http"
 	"reflect"
 	"testing"
+
+	"github.com/tsuru/tsuru-usage/tsuru"
 )
 
-type FakeDoer struct {
-	response http.Response
-}
-
-func (d *FakeDoer) Do(request *http.Request) (*http.Response, error) {
-	return &d.response, nil
-}
-
 func TestFetchNodesCount(t *testing.T) {
-	body := `{
-	"nodes": [
-		{"Address": "http://localhost1:8080", "Status": "disabled", "Metadata": {"pool": "dev", "meta2": "bar"}},
-		{"Address": "http://localhost1:8080", "Status": "disabled", "Metadata": {"pool": "dev", "meta2": "bar"}},
-		{"Address": "http://localhost1:8080", "Status": "disabled", "Metadata": {"pool": "prod", "meta2": "bar"}}
-	]
-}`
-	f := &FakeDoer{
-		response: http.Response{
-			StatusCode: 200,
-			Body:       ioutil.NopCloser(bytes.NewReader([]byte(body))),
+	f := &tsuru.FakeTsuruAPI{
+		Nodes: []tsuru.Node{
+			{Metadata: tsuru.NodeMetadata{Pool: "dev"}},
+			{Metadata: tsuru.NodeMetadata{Pool: "dev"}},
+			{Metadata: tsuru.NodeMetadata{Pool: "prod"}},
 		},
 	}
-	client := tsuruClient{httpClient: f}
+	client := tsuruCollectorClient{api: f}
 	counts, err := client.fetchNodesCount()
 	if err != nil {
 		t.Errorf("Expected err to be nil. Got %s", err)
@@ -49,18 +34,15 @@ func TestFetchNodesCount(t *testing.T) {
 }
 
 func TestFetchUnitsCount(t *testing.T) {
-	body := `[
-{"ip":"10.10.10.11","name":"app1","pool": "pool1", "teamowner":"admin", "units":[{"ID":"sapp1/0","Status":"started"}]},
-{"ip":"10.10.10.11","name":"app3","pool": "pool2", "units":[{"ID":"sapp1/0","Status":"stopped"}]},
-{"ip":"10.10.10.11","name":"app4","pool": "pool2"},
-{"ip":"10.10.10.10","name":"app2", "pool":"pool1", "units":[{"ID":"app2/0","Status":"started"},{"ID":"app2/0","Status":"error"}]}]`
-	f := &FakeDoer{
-		response: http.Response{
-			StatusCode: 200,
-			Body:       ioutil.NopCloser(bytes.NewReader([]byte(body))),
+	f := &tsuru.FakeTsuruAPI{
+		Apps: []tsuru.App{
+			{Name: "app1", Pool: "pool1", TeamOwner: "admin", Units: []tsuru.Unit{{Status: "started"}}},
+			{Name: "app3", Pool: "pool2", Units: []tsuru.Unit{{Status: "stopped"}}},
+			{Name: "app4", Pool: "pool2"},
+			{Name: "app2", Pool: "pool1", Units: []tsuru.Unit{{Status: "started"}, {Status: "error"}}},
 		},
 	}
-	client := tsuruClient{httpClient: f}
+	client := tsuruCollectorClient{api: f}
 	counts, err := client.fetchUnitsCount()
 	if err != nil {
 		t.Errorf("Expected err to be nil. Got %s", err)
@@ -77,24 +59,22 @@ func TestFetchUnitsCount(t *testing.T) {
 }
 
 func TestFetchServicesInstances(t *testing.T) {
-	body := `[
-	{"Apps":[],"Id":0,"Info":{"Address":"127.0.0.1","Instances":"2"},"Name":"instance-rpaas","PlanName":"plan1","ServiceName":"rpaas","TeamOwner":"myteam","Teams":["myteam"]},
-	{"Apps":[],"Id":0,"Info":{"Address":"127.0.0.1"},"Name":"instance-rpaas","PlanName":"plan1","ServiceName":"rpaas","TeamOwner":"myteam","Teams":["myteam"]}
-]`
-	f := &FakeDoer{
-		response: http.Response{
-			StatusCode: 200,
-			Body:       ioutil.NopCloser(bytes.NewReader([]byte(body))),
+	f := &tsuru.FakeTsuruAPI{
+		Instances: map[string][]tsuru.ServiceInstance{
+			"rpaas": []tsuru.ServiceInstance{
+				{ServiceName: "rpaas", Name: "instance-rpaas", PlanName: "plan1", TeamOwner: "myteam", Info: map[string]string{"Address": "127.0.0.1", "Instances": "2"}},
+				{ServiceName: "rpaas", Name: "instance-rpaas", PlanName: "plan1", TeamOwner: "myteam", Info: map[string]string{"Address": "127.0.0.1"}},
+			},
 		},
 	}
-	client := tsuruClient{httpClient: f}
+	client := tsuruCollectorClient{api: f}
 	instances, err := client.fetchServicesInstances("rpaas")
 	if err != nil {
 		t.Errorf("Expected err to be nil. Got %s", err)
 	}
 	expectedInstances := []serviceInstance{
-		{ServiceName: "rpaas", Name: "instance-rpaas", PlanName: "plan1", TeamOwner: "myteam", Info: map[string]string{"Address": "127.0.0.1", "Instances": "2"}, count: 2},
-		{ServiceName: "rpaas", Name: "instance-rpaas", PlanName: "plan1", TeamOwner: "myteam", Info: map[string]string{"Address": "127.0.0.1"}, count: 1},
+		{ServiceInstance: tsuru.ServiceInstance{ServiceName: "rpaas", Name: "instance-rpaas", PlanName: "plan1", TeamOwner: "myteam", Info: map[string]string{"Address": "127.0.0.1", "Instances": "2"}}, count: 2},
+		{ServiceInstance: tsuru.ServiceInstance{ServiceName: "rpaas", Name: "instance-rpaas", PlanName: "plan1", TeamOwner: "myteam", Info: map[string]string{"Address": "127.0.0.1"}}, count: 1},
 	}
 	if !reflect.DeepEqual(instances, expectedInstances) {
 		t.Errorf("Expected %#+v. Got %#+v", expectedInstances, instances)

@@ -16,6 +16,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/tsuru/tsuru-usage/api"
 	"github.com/tsuru/tsuru-usage/exporter"
+	"github.com/tsuru/tsuru-usage/tsuru"
 	"github.com/tsuru/tsuru-usage/web"
 	"github.com/urfave/negroni"
 )
@@ -38,7 +39,8 @@ func main() {
 	if tsuruServicesStr != "" {
 		services = strings.Split(tsuruServicesStr, ",")
 	}
-	exporter.Register(tsuruEndpoint, tsuruToken, services)
+	client := tsuru.NewClient(tsuruEndpoint, tsuruToken)
+	exporter.Register(client, services)
 	runServer(port)
 }
 
