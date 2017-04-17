@@ -96,3 +96,49 @@ func (s *S) TestListServicesInstances(c *check.C) {
 	}
 	c.Assert(instances, check.DeepEquals, expectedInstances)
 }
+
+func (s *S) TestListPools(c *check.C) {
+	body := `[
+	{"Name":"pool1","Teams":[],"Public":true,"Default":false,"Provisioner":""},
+	{"Name":"pool2","Teams":[],"Public":true,"Default":false,"Provisioner":""},
+	{"Name":"pool3","Teams":[],"Public":true,"Default":false,"Provisioner":""}
+]`
+	f := &fakeDoer{
+		response: http.Response{
+			StatusCode: 200,
+			Body:       ioutil.NopCloser(bytes.NewReader([]byte(body))),
+		},
+	}
+	client := TsuruClient{httpClient: f}
+	pools, err := client.ListPools()
+	c.Assert(err, check.IsNil)
+	expected := []Pool{
+		{Name: "pool1"},
+		{Name: "pool2"},
+		{Name: "pool3"},
+	}
+	c.Assert(pools, check.DeepEquals, expected)
+}
+
+func (s *S) TestListTeams(c *check.C) {
+	body := `[
+	{"name":"team1","permissions":["app","team","service","service-instance"]},
+	{"name":"team2","permissions":["app","team","service","service-instance"]},
+	{"name":"team3","permissions":["app","team","service","service-instance"]}
+]`
+	f := &fakeDoer{
+		response: http.Response{
+			StatusCode: 200,
+			Body:       ioutil.NopCloser(bytes.NewReader([]byte(body))),
+		},
+	}
+	client := TsuruClient{httpClient: f}
+	teams, err := client.ListTeams()
+	c.Assert(err, check.IsNil)
+	expected := []Team{
+		{Name: "team1"},
+		{Name: "team2"},
+		{Name: "team3"},
+	}
+	c.Assert(teams, check.DeepEquals, expected)
+}

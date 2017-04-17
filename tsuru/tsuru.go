@@ -11,12 +11,16 @@ import (
 	"time"
 )
 
+var _ TsuruAPI = &TsuruClient{}
+
 var Client TsuruAPI
 
 type TsuruAPI interface {
 	ListApps() ([]App, error)
 	ListServiceInstances(service string) ([]ServiceInstance, error)
 	ListNodes() ([]Node, error)
+	ListPools() ([]Pool, error)
+	ListTeams() ([]Team, error)
 }
 
 type App struct {
@@ -65,6 +69,14 @@ type TsuruClient struct {
 	httpClient RequestDoer
 }
 
+type Pool struct {
+	Name string
+}
+
+type Team struct {
+	Name string
+}
+
 func NewClient(addr, token string) *TsuruClient {
 	return &TsuruClient{addr: addr, token: token, httpClient: &http.Client{Timeout: 10 * time.Second}}
 }
@@ -88,6 +100,18 @@ func (c *TsuruClient) ListNodes() ([]Node, error) {
 		return nil, err
 	}
 	return result.Nodes, err
+}
+
+func (c *TsuruClient) ListPools() ([]Pool, error) {
+	var result []Pool
+	err := c.fetchList("pools", &result)
+	return result, err
+}
+
+func (c *TsuruClient) ListTeams() ([]Team, error) {
+	var result []Team
+	err := c.fetchList("teams", &result)
+	return result, err
 }
 
 func (c *TsuruClient) fetchList(path string, v interface{}) error {
