@@ -92,9 +92,10 @@ func serviceUsageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	tabData := TabData{
-		Active: "services",
-		Group:  teamOrGroup,
-		Year:   year,
+		ActiveTab:    "services",
+		TeamOrGroup:  teamOrGroup,
+		GroupingType: groupingType,
+		Year:         year,
 	}
 	context := struct {
 		TeamOrGroup  string

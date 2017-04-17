@@ -21,7 +21,7 @@ func render(w http.ResponseWriter, templatePath string, data interface{}) error 
 		dir + "/" + templatePath,
 		dir + "/templates/base.html",
 		dir + "/templates/back.html",
-		dir + "/templates/group_tabs.html",
+		dir + "/templates/tabs.html",
 	}
 	t, err := template.ParseFiles(templates...)
 	if err != nil {

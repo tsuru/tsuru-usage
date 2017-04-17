@@ -84,9 +84,10 @@ func appUsageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	tabData := TabData{
-		Active: "apps",
-		Group:  teamOrGroup,
-		Year:   year,
+		ActiveTab:    "apps",
+		TeamOrGroup:  teamOrGroup,
+		GroupingType: groupingType,
+		Year:         year,
 	}
 	context := struct {
 		TeamOrGroup  string

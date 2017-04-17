@@ -13,9 +13,10 @@ import (
 )
 
 type TabData struct {
-	Active string
-	Group  string
-	Year   string
+	ActiveTab    string
+	TeamOrGroup  string
+	GroupingType string
+	Year         string
 }
 
 type UsageValue float64

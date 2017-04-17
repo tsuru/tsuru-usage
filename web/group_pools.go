@@ -48,9 +48,10 @@ func groupPoolUsageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	tabData := TabData{
-		Active: "pools",
-		Group:  group,
-		Year:   year,
+		ActiveTab:    "pools",
+		TeamOrGroup:  group,
+		GroupingType: "group",
+		Year:         year,
 	}
 	context := struct {
 		Group      string
