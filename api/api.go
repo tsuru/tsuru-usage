@@ -29,6 +29,7 @@ func Router(m *mux.Router) {
 	m.Handle("/{resource}/{team}/{year}", handler(getTeamUsage))
 	m.Handle("/teamgroups/{name}/pools/{year}", handler(getPoolUsageForGroup))
 	m.Handle("/teamgroups/{name}", handler(updateTeamGroup)).Methods(http.MethodPut)
+	m.Handle("/teamgroups/{name}", handler(viewTeamGroup))
 	m.Handle("/teamgroups", handler(listTeamGroups))
 	m.Handle("/plans/cost", handler(updatePlanCost)).Methods(http.MethodPut)
 	m.Handle("/plans/cost", handler(listPlanCosts))

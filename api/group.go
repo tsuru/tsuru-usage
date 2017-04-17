@@ -68,3 +68,19 @@ func listTeamGroups(w http.ResponseWriter, r *http.Request) error {
 	w.Header().Set("Content-Type", "application/json")
 	return json.NewEncoder(w).Encode(teamGroups)
 }
+
+func viewTeamGroup(w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	name := vars["name"]
+	conn, err := db.Conn()
+	if err != nil {
+		return err
+	}
+	var teamGroup TeamGroup
+	err = conn.TeamGroups().Find(bson.M{"name": name}).One(&teamGroup)
+	if err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	return json.NewEncoder(w).Encode(teamGroup)
+}

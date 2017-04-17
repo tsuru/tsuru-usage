@@ -71,3 +71,23 @@ func (s *S) TestListTeamGroups(c *check.C) {
 	c.Assert(body, check.DeepEquals, expected)
 	c.Assert(recorder.HeaderMap.Get("Content-type"), check.DeepEquals, "application/json")
 }
+
+func (s *S) TestViewTeamGroup(c *check.C) {
+	conn, err := db.Conn()
+	c.Assert(err, check.IsNil)
+	conn.TeamGroups().Insert(
+		bson.M{"name": "group1", "teams": []string{"team1", "team2"}},
+		bson.M{"name": "group2", "teams": []string{"team3"}, "pools": []string{"pool1"}},
+	)
+	expected := TeamGroup{Name: "group1", Teams: []string{"team1", "team2"}}
+	recorder := httptest.NewRecorder()
+	request, err := http.NewRequest(http.MethodGet, "/teamgroups/group1", nil)
+	c.Assert(err, check.IsNil)
+	server(recorder, request)
+	c.Assert(recorder.Code, check.Equals, http.StatusOK)
+	var body TeamGroup
+	err = json.Unmarshal(recorder.Body.Bytes(), &body)
+	c.Assert(err, check.IsNil)
+	c.Assert(body, check.DeepEquals, expected)
+	c.Assert(recorder.HeaderMap.Get("Content-type"), check.DeepEquals, "application/json")
+}
