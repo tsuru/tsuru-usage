@@ -26,10 +26,10 @@
 					<td>{{$usage.Service}}</td>
 					<td>{{$usage.Plan}}</td>
 					<td>{{$usage.Usage}}</td>
-					<td>{{$usage.Cost.UnitCost}} {{$usage.Cost.MeasureUnit}}</td>
-					<td>{{$usage.Cost.TotalCost}} {{$usage.Cost.MeasureUnit}}</td>
+					<td>{{$usage.Cost.UnitCostValue}}</td>
+					<td>{{$usage.Cost.TotalCostValue}}</td>
 					{{if eq $i 0}}
-						<td rowspan="{{$count}}">{{index $.Total.CostPerMonth $item.Month}} {{$usage.Cost.MeasureUnit}}</td>
+						<td rowspan="{{$count}}">{{$.Total.MonthValue $item.Month}}</td>
 					{{end}}
 				</tr>
 			{{end}}
@@ -39,7 +39,7 @@
 		<tr>
 			<th scope="row" colspan="3">Total</th>
 			<th colspan="3">{{.Total.Usage}}</th>
-			<th>{{.Total.TotalCost}} {{.Total.MeasureUnit}}</th>
+			<th>{{.Total.TotalCostValue}}</th>
 		</tr>
 	</tfoot>
 </table>

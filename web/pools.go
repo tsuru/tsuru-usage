@@ -17,7 +17,7 @@ import (
 type PoolUsage struct {
 	Pool  string
 	Month string
-	Usage float64
+	Usage UsageValue
 }
 
 func poolListHandler(w http.ResponseWriter, r *http.Request) {
@@ -49,7 +49,7 @@ func poolUsageHandler(w http.ResponseWriter, r *http.Request) {
 		PoolName string
 		Year     string
 		Usage    []PoolUsage
-		Total    float64
+		Total    UsageValue
 	}{
 		pool,
 		year,
@@ -62,8 +62,8 @@ func poolUsageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func totalPoolUsage(usage []PoolUsage) float64 {
-	var result float64
+func totalPoolUsage(usage []PoolUsage) UsageValue {
+	var result UsageValue
 	for _, item := range usage {
 		result += item.Usage
 	}

@@ -22,8 +22,8 @@
 					{{end}}
 					<td>{{$usage.Plan}}</td>
 					<td>{{$usage.Usage}}</td>
-					<td>{{$usage.Cost.UnitCost}} {{$usage.Cost.MeasureUnit}}</td>
-					<td>{{$usage.Cost.TotalCost}} {{$usage.Cost.MeasureUnit}}</td>
+					<td>{{$usage.Cost.UnitCostValue}}</td>
+					<td>{{$usage.Cost.TotalCostValue}}</td>
 				</tr>
 			{{end}}
 		{{end}}
@@ -32,8 +32,8 @@
 		<tr>
 			<th scope="row" colspan="2">Total</th>
 			<th>{{.Total.Usage}}</th>
-			<th>{{.Total.UnitCost}} {{.Total.MeasureUnit}}</th>
-			<th>{{.Total.TotalCost}} {{.Total.MeasureUnit}}</th>
+			<th>{{.Total.UnitCostValue}}</th>
+			<th>{{.Total.TotalCostValue}}</th>
 		</tr>
 	</tfoot>
 </table>

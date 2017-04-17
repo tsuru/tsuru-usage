@@ -5,13 +5,23 @@
 package web
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/gorilla/mux"
 )
 
+type UsageValue float64
+
 type handler func(http.ResponseWriter, *http.Request) error
+
+func (u UsageValue) String() string {
+	if u == 0.0 {
+		return "0"
+	}
+	return fmt.Sprintf("%.2f", u)
+}
 
 func (fn handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	err := fn(w, r)

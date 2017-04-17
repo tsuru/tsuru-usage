@@ -39,13 +39,13 @@ func (s *S) TestPoolUsage(c *check.C) {
 	c.Assert(recorder.Code, check.Equals, http.StatusOK)
 	body := recorder.Body.String()
 	c.Assert(strings.Contains(body, "January"), check.Equals, true)
-	c.Assert(strings.Contains(body, "10"), check.Equals, true)
+	c.Assert(strings.Contains(body, "10.00"), check.Equals, true)
 	c.Assert(strings.Contains(body, "February"), check.Equals, true)
-	c.Assert(strings.Contains(body, "6"), check.Equals, true)
+	c.Assert(strings.Contains(body, "6.00"), check.Equals, true)
 	c.Assert(strings.Contains(body, "March"), check.Equals, true)
-	c.Assert(strings.Contains(body, "3"), check.Equals, true)
+	c.Assert(strings.Contains(body, "3.00"), check.Equals, true)
 	c.Assert(strings.Contains(body, "Total"), check.Equals, true)
-	c.Assert(strings.Contains(body, "19"), check.Equals, true)
+	c.Assert(strings.Contains(body, "19.00"), check.Equals, true)
 }
 
 func (s *S) TestPoolUsageAPIError(c *check.C) {

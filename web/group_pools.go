@@ -18,13 +18,13 @@ type GroupPoolUsage struct {
 	Month string
 	Usage []struct {
 		Pool  string
-		Usage float64
+		Usage UsageValue
 	}
 }
 
 type TotalGroupPoolUsage struct {
-	Total         float64
-	TotalPerMonth map[string]float64
+	Total         UsageValue
+	TotalPerMonth map[string]UsageValue
 }
 
 func groupPoolUsageHandler(w http.ResponseWriter, r *http.Request) {
@@ -65,7 +65,7 @@ func groupPoolUsageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func totalGroupPoolUsage(usage []GroupPoolUsage) TotalGroupPoolUsage {
-	total := TotalGroupPoolUsage{TotalPerMonth: make(map[string]float64)}
+	total := TotalGroupPoolUsage{TotalPerMonth: make(map[string]UsageValue)}
 	for _, month := range usage {
 		for _, item := range month.Usage {
 			total.Total += item.Usage

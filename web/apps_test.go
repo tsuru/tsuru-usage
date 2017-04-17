@@ -56,15 +56,15 @@ func (s *S) TestAppUsage(c *check.C) {
 	body := recorder.Body.String()
 	c.Assert(strings.Contains(body, "January"), check.Equals, true)
 	c.Assert(strings.Contains(body, "default plan"), check.Equals, true)
-	c.Assert(strings.Contains(body, "5"), check.Equals, true)
-	c.Assert(strings.Contains(body, "2 GB"), check.Equals, true)
-	c.Assert(strings.Contains(body, "10 GB"), check.Equals, true)
+	c.Assert(strings.Contains(body, "5.00"), check.Equals, true)
+	c.Assert(strings.Contains(body, "2.00 GB"), check.Equals, true)
+	c.Assert(strings.Contains(body, "10.00 GB"), check.Equals, true)
 	c.Assert(strings.Contains(body, "February"), check.Equals, true)
 	c.Assert(strings.Contains(body, "planb"), check.Equals, true)
-	c.Assert(strings.Contains(body, "2"), check.Equals, true)
-	c.Assert(strings.Contains(body, "3 GB"), check.Equals, true)
-	c.Assert(strings.Contains(body, "6 GB"), check.Equals, true)
-	c.Assert(strings.Contains(body, "16 GB"), check.Equals, true)
+	c.Assert(strings.Contains(body, "2.00"), check.Equals, true)
+	c.Assert(strings.Contains(body, "3.00 GB"), check.Equals, true)
+	c.Assert(strings.Contains(body, "6.00 GB"), check.Equals, true)
+	c.Assert(strings.Contains(body, "16.00 GB"), check.Equals, true)
 }
 
 func (s *S) TestAppUsageAPIError(c *check.C) {

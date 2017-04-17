@@ -19,22 +19,38 @@ var Client = &http.Client{}
 
 type AppCost struct {
 	MeasureUnit string
-	UnitCost    float64
-	TotalCost   float64
+	UnitCost    UsageValue
+	TotalCost   UsageValue
 }
 
 type TotalAppCost struct {
 	AppCost
-	Usage float64
+	Usage UsageValue
 }
 
 type AppUsage struct {
 	Month string
 	Usage []struct {
 		Plan  string
-		Usage float64
+		Usage UsageValue
 		Cost  AppCost
 	}
+}
+
+func (a AppCost) UnitCostValue() string {
+	str := a.UnitCost.String()
+	if str == "0" {
+		return str
+	}
+	return fmt.Sprintf("%s %s", str, a.MeasureUnit)
+}
+
+func (a AppCost) TotalCostValue() string {
+	str := a.TotalCost.String()
+	if str == "0" {
+		return str
+	}
+	return fmt.Sprintf("%s %s", str, a.MeasureUnit)
 }
 
 func appTeamListHandler(w http.ResponseWriter, r *http.Request) {

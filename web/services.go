@@ -17,14 +17,14 @@ import (
 
 type ServiceCost struct {
 	MeasureUnit string
-	UnitCost    float64
-	TotalCost   float64
+	UnitCost    UsageValue
+	TotalCost   UsageValue
 }
 
 type TotalServiceCost struct {
 	ServiceCost
-	Usage        float64
-	CostPerMonth map[string]float64
+	Usage        UsageValue
+	CostPerMonth map[string]UsageValue
 }
 
 type ServiceUsage struct {
@@ -32,9 +32,33 @@ type ServiceUsage struct {
 	Usage []struct {
 		Service string
 		Plan    string
-		Usage   float64
+		Usage   UsageValue
 		Cost    ServiceCost
 	}
+}
+
+func (s ServiceCost) UnitCostValue() string {
+	str := s.UnitCost.String()
+	if str == "0" {
+		return str
+	}
+	return fmt.Sprintf("%s %s", str, s.MeasureUnit)
+}
+
+func (s ServiceCost) TotalCostValue() string {
+	str := s.TotalCost.String()
+	if str == "0" {
+		return str
+	}
+	return fmt.Sprintf("%s %s", str, s.MeasureUnit)
+}
+
+func (t TotalServiceCost) MonthValue(month string) string {
+	str := t.CostPerMonth[month].String()
+	if str == "0" {
+		return str
+	}
+	return fmt.Sprintf("%s %s", str, t.MeasureUnit)
 }
 
 func serviceTeamListHandler(w http.ResponseWriter, r *http.Request) {
@@ -87,7 +111,7 @@ func serviceUsageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func totalServiceCost(usage []ServiceUsage) TotalServiceCost {
-	total := TotalServiceCost{CostPerMonth: make(map[string]float64)}
+	total := TotalServiceCost{CostPerMonth: make(map[string]UsageValue)}
 	for _, month := range usage {
 		for _, item := range month.Usage {
 			if item.Cost.MeasureUnit != "" && total.MeasureUnit == "" {
@@ -95,7 +119,7 @@ func totalServiceCost(usage []ServiceUsage) TotalServiceCost {
 			}
 			total.TotalCost += item.Cost.TotalCost
 			total.Usage += item.Usage
-			total.CostPerMonth[month.Month] += item.Cost.TotalCost
+			total.CostPerMonth[month.Month] += UsageValue(item.Cost.TotalCost)
 		}
 	}
 	return total

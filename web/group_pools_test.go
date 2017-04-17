@@ -50,15 +50,15 @@ func (s *S) TestGroupPoolUsage(c *check.C) {
 	body := recorder.Body.String()
 	c.Assert(strings.Contains(body, "January"), check.Equals, true)
 	c.Assert(strings.Contains(body, "pool1"), check.Equals, true)
-	c.Assert(strings.Contains(body, "5"), check.Equals, true)
+	c.Assert(strings.Contains(body, "5.00"), check.Equals, true)
 	c.Assert(strings.Contains(body, "pool2"), check.Equals, true)
-	c.Assert(strings.Contains(body, "7"), check.Equals, true)
-	c.Assert(strings.Contains(body, "12"), check.Equals, true)
+	c.Assert(strings.Contains(body, "7.00"), check.Equals, true)
+	c.Assert(strings.Contains(body, "12.00"), check.Equals, true)
 	c.Assert(strings.Contains(body, "February"), check.Equals, true)
 	c.Assert(strings.Contains(body, "pool2"), check.Equals, true)
-	c.Assert(strings.Contains(body, "2"), check.Equals, true)
+	c.Assert(strings.Contains(body, "2.00"), check.Equals, true)
 	c.Assert(strings.Contains(body, "Total"), check.Equals, true)
-	c.Assert(strings.Contains(body, "14"), check.Equals, true)
+	c.Assert(strings.Contains(body, "14.00"), check.Equals, true)
 }
 
 func (s *S) TestGroupPoolUsageAPIError(c *check.C) {
