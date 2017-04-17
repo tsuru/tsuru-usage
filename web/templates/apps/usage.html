@@ -2,6 +2,11 @@
 {{template "back"}}
 
 <h1 class="my-4">Apps usage for {{.GroupingType}} <strong>{{.TeamOrGroup}}</strong> in {{.Year}}</h1>
+
+{{if eq .GroupingType "group"}}
+	{{template "group_tabs" .TabData}}
+{{end}}
+
 <table class="table table-hover">
 	<thead>
 		<tr>

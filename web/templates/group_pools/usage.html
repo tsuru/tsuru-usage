@@ -1,38 +1,41 @@
 {{define "content"}}
 {{template "back"}}
 
-<h1 class="my-4">Tsuru usage for group <strong>{{.Group}}</strong> in {{.Year}}</h1>
+<h1 class="my-4">Pools usage for group <strong>{{.Group}}</strong> in {{.Year}}</h1>
+
+{{template "group_tabs" .TabData}}
+
 <table class="table table-hover">
-  <thead>
-    <tr>
-      <th>Month</th>
-      <th>Pool</th>
-      <th>Usage per pool</th>
-      <th>Usage per month</th>
-    </tr>
-  </thead>
-  <tbody>
-    {{range $item := .Usage}}
-      {{$count := len $item.Usage}}
-      {{range $i, $usage := $item.Usage}}
-        <tr>
-          {{if eq $i 0}}
-            <td rowspan="{{$count}}">{{$item.Month}}</td>
-          {{end}}
-          <td><a href="/web/pools/{{$usage.Pool}}/{{$.Year}}">{{$usage.Pool}}</a></td>
-          <td>{{$usage.Usage}}</td>
-          {{if eq $i 0}}
-            <td rowspan="{{$count}}">{{index $.TotalUsage.TotalPerMonth $item.Month}}</td>
-          {{end}}
-        </tr>
-      {{end}}
-    {{end}}
-  </tbody>
-  <tfoot>
-    <tr>
-      <th scope="row" colspan="3">Total</th>
-      <th>{{.TotalUsage.Total}}</th>
-    </tr>
-  </tfoot>
+	<thead>
+		<tr>
+			<th>Month</th>
+			<th>Pool</th>
+			<th>Usage per pool</th>
+			<th>Usage per month</th>
+		</tr>
+	</thead>
+	<tbody>
+		{{range $item := .Usage}}
+			{{$count := len $item.Usage}}
+			{{range $i, $usage := $item.Usage}}
+				<tr>
+					{{if eq $i 0}}
+						<td rowspan="{{$count}}">{{$item.Month}}</td>
+					{{end}}
+					<td><a href="/web/pools/{{$usage.Pool}}/{{$.Year}}">{{$usage.Pool}}</a></td>
+					<td>{{$usage.Usage}}</td>
+					{{if eq $i 0}}
+						<td rowspan="{{$count}}">{{index $.TotalUsage.TotalPerMonth $item.Month}}</td>
+					{{end}}
+				</tr>
+			{{end}}
+		{{end}}
+	</tbody>
+	<tfoot>
+		<tr>
+			<th scope="row" colspan="3">Total</th>
+			<th>{{.TotalUsage.Total}}</th>
+		</tr>
+	</tfoot>
 </table>
 {{end}}

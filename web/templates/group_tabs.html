@@ -1,0 +1,27 @@
+{{define "group_tabs"}}
+<ul class="nav nav-tabs justify-content-center" style="margin: 40px 0 60px">
+	<li class="nav-item">
+		{{if eq .Active "pools"}}
+			<a class="nav-link active">Pools</a>
+		{{else}}
+			<a class="nav-link" href="/web/teamgroups/{{.Group}}/pools/{{.Year}}">Pools</a>
+		{{end}}
+	</li>
+
+	<li class="nav-item">
+		{{if eq .Active "apps"}}
+			<a class="nav-link active">Apps</a>
+		{{else}}
+			<a class="nav-link" href="/web/apps/{{.Group}}/{{.Year}}?group=true">Apps</a>
+		{{end}}
+	</li>
+
+	<li class="nav-item">
+		{{if eq .Active "services"}}
+			<a class="nav-link active">Services</a>
+		{{else}}
+			<a class="nav-link" href="/web/services/{{.Group}}/{{.Year}}?group=true">Services</a>
+		{{end}}
+	</li>
+</ul>
+{{end}}

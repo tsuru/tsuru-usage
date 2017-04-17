@@ -47,16 +47,23 @@ func groupPoolUsageHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	tabData := TabData{
+		Active: "pools",
+		Group:  group,
+		Year:   year,
+	}
 	context := struct {
 		Group      string
 		Year       string
 		Usage      []GroupPoolUsage
 		TotalUsage TotalGroupPoolUsage
+		TabData    TabData
 	}{
 		group,
 		year,
 		usage,
 		totalGroupPoolUsage(usage),
+		tabData,
 	}
 	err = render(w, "templates/group_pools/usage.html", context)
 	if err != nil {

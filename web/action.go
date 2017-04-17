@@ -17,7 +17,13 @@ func render(w http.ResponseWriter, templatePath string, data interface{}) error 
 	if !strings.HasSuffix(dir, "/web") {
 		dir += "/web"
 	}
-	t, err := template.ParseFiles(dir+"/"+templatePath, dir+"/templates/base.html", dir+"/templates/back.html")
+	templates := []string{
+		dir + "/" + templatePath,
+		dir + "/templates/base.html",
+		dir + "/templates/back.html",
+		dir + "/templates/group_tabs.html",
+	}
+	t, err := template.ParseFiles(templates...)
 	if err != nil {
 		log.Printf("Error parsing template %s: %s", templatePath, err)
 		w.WriteHeader(http.StatusInternalServerError)

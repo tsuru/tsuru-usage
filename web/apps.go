@@ -83,18 +83,25 @@ func appUsageHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	tabData := TabData{
+		Active: "apps",
+		Group:  teamOrGroup,
+		Year:   year,
+	}
 	context := struct {
 		TeamOrGroup  string
 		GroupingType string
 		Year         string
 		Usage        []AppUsage
 		Total        TotalAppCost
+		TabData      TabData
 	}{
 		teamOrGroup,
 		groupingType,
 		year,
 		usage,
 		totalAppCost(usage),
+		tabData,
 	}
 	err = render(w, "templates/apps/usage.html", context)
 	if err != nil {

@@ -91,18 +91,25 @@ func serviceUsageHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	tabData := TabData{
+		Active: "services",
+		Group:  teamOrGroup,
+		Year:   year,
+	}
 	context := struct {
 		TeamOrGroup  string
 		GroupingType string
 		Year         string
 		Usage        []ServiceUsage
 		Total        TotalServiceCost
+		TabData      TabData
 	}{
 		teamOrGroup,
 		groupingType,
 		year,
 		usage,
 		totalServiceCost(usage),
+		tabData,
 	}
 	err = render(w, "templates/services/usage.html", context)
 	if err != nil {
