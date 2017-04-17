@@ -41,13 +41,13 @@ func main() {
 	}
 	client := tsuru.NewClient(tsuruEndpoint, tsuruToken)
 	exporter.Register(client, services)
-	runServer(port)
+	runServer(port, client)
 }
 
-func runServer(port string) {
+func runServer(port string, tsuruAPI tsuru.TsuruAPI) {
 	s := &http.Server{
 		Addr:         fmt.Sprintf(":%s", port),
-		Handler:      router(),
+		Handler:      router(tsuruAPI),
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
 	}
@@ -55,10 +55,10 @@ func runServer(port string) {
 	log.Fatal(s.ListenAndServe())
 }
 
-func router() http.Handler {
+func router(tsuruAPI tsuru.TsuruAPI) http.Handler {
 	r := mux.NewRouter().StrictSlash(true)
 	apiRouter := r.PathPrefix("/api").Subrouter()
-	api.Router(apiRouter)
+	api.Router(apiRouter, tsuruAPI)
 	webRouter := r.PathPrefix("/web").Subrouter()
 	web.Router(webRouter)
 	n := negroni.Classic()

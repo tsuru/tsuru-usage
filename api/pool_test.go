@@ -10,17 +10,30 @@ import (
 	"net/http/httptest"
 	"time"
 
-	"github.com/gorilla/mux"
 	"github.com/prometheus/common/model"
 	"github.com/tsuru/tsuru-usage/db"
 	"github.com/tsuru/tsuru-usage/prom"
+	"github.com/tsuru/tsuru-usage/tsuru"
 	check "gopkg.in/check.v1"
 )
 
-func server(w http.ResponseWriter, r *http.Request) {
-	m := mux.NewRouter()
-	Router(m)
-	m.ServeHTTP(w, r)
+func (s *S) TestPoolList(c *check.C) {
+	expected := []tsuru.Pool{
+		{Name: "pool1"},
+		{Name: "pool2"},
+		{Name: "pool2"},
+	}
+	s.tsuruAPI.Pools = expected
+	recorder := httptest.NewRecorder()
+	request, err := http.NewRequest(http.MethodGet, "/pools", nil)
+	c.Assert(err, check.IsNil)
+	s.server(recorder, request)
+	c.Assert(recorder.Code, check.Equals, http.StatusOK)
+	var body []tsuru.Pool
+	err = json.Unmarshal(recorder.Body.Bytes(), &body)
+	c.Assert(err, check.IsNil)
+	c.Assert(body, check.DeepEquals, expected)
+	c.Assert(recorder.HeaderMap.Get("Content-type"), check.DeepEquals, "application/json")
 }
 
 func (s *S) TestGetPoolUsage(c *check.C) {
@@ -49,7 +62,7 @@ func (s *S) TestGetPoolUsage(c *check.C) {
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodGet, "/pools/mypool/2017", nil)
 	c.Assert(err, check.IsNil)
-	server(recorder, request)
+	s.server(recorder, request)
 	c.Assert(recorder.Code, check.Equals, http.StatusOK)
 	var body []PoolUsage
 	err = json.Unmarshal(recorder.Body.Bytes(), &body)
@@ -97,7 +110,7 @@ func (s *S) TestGetPoolUsageForGroup(c *check.C) {
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodGet, "/teamgroups/mygroup/pools/2017", nil)
 	c.Assert(err, check.IsNil)
-	server(recorder, request)
+	s.server(recorder, request)
 	c.Assert(recorder.Code, check.Equals, http.StatusOK)
 	var body []TeamPoolUsage
 	err = json.Unmarshal(recorder.Body.Bytes(), &body)

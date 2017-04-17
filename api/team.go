@@ -16,6 +16,7 @@ import (
 	"github.com/prometheus/common/model"
 	"github.com/tsuru/tsuru-usage/api/plan"
 	"github.com/tsuru/tsuru-usage/prom"
+	"github.com/tsuru/tsuru-usage/tsuru"
 )
 
 const (
@@ -30,6 +31,19 @@ type UsageCost struct {
 }
 
 type ResourceType string
+
+func listTeams(w http.ResponseWriter, r *http.Request, api tsuru.TsuruAPI) error {
+	teams, err := api.ListTeams()
+	if err != nil {
+		return err
+	}
+	if len(teams) == 0 {
+		w.WriteHeader(http.StatusNoContent)
+		return nil
+	}
+	w.Header().Set("Content-Type", "application/json")
+	return json.NewEncoder(w).Encode(teams)
+}
 
 func getTeamUsage(w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)

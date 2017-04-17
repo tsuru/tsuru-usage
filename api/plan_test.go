@@ -25,7 +25,7 @@ func (s *S) TestUpdatePlanCost(c *check.C) {
 	request, err := http.NewRequest(http.MethodPut, "/plans/cost", strings.NewReader(reqBody))
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	c.Assert(err, check.IsNil)
-	server(recorder, request)
+	s.server(recorder, request)
 	c.Assert(recorder.Code, check.Equals, http.StatusCreated)
 	plans, err := plan.ListCosts()
 	c.Assert(err, check.IsNil)
@@ -37,7 +37,7 @@ func (s *S) TestUpdatePlanCost(c *check.C) {
 	request, err = http.NewRequest(http.MethodPut, "/plans/cost", strings.NewReader(reqBody))
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	c.Assert(err, check.IsNil)
-	server(recorder, request)
+	s.server(recorder, request)
 	c.Assert(recorder.Code, check.Equals, http.StatusOK)
 	plans, err = plan.ListCosts()
 	c.Assert(err, check.IsNil)
@@ -48,7 +48,7 @@ func (s *S) TestListPlanCosts(c *check.C) {
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodGet, "/plans/cost", nil)
 	c.Assert(err, check.IsNil)
-	server(recorder, request)
+	s.server(recorder, request)
 	c.Assert(recorder.Code, check.Equals, http.StatusNoContent)
 	p1 := plan.PlanCost{
 		Type:        plan.AppPlan,
@@ -70,7 +70,7 @@ func (s *S) TestListPlanCosts(c *check.C) {
 	recorder = httptest.NewRecorder()
 	request, err = http.NewRequest(http.MethodGet, "/plans/cost", nil)
 	c.Assert(err, check.IsNil)
-	server(recorder, request)
+	s.server(recorder, request)
 	var plans []plan.PlanCost
 	err = json.NewDecoder(recorder.Body).Decode(&plans)
 	c.Assert(err, check.IsNil)

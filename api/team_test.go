@@ -14,8 +14,28 @@ import (
 	"github.com/tsuru/tsuru-usage/api/plan"
 	"github.com/tsuru/tsuru-usage/db"
 	"github.com/tsuru/tsuru-usage/prom"
+	"github.com/tsuru/tsuru-usage/tsuru"
 	check "gopkg.in/check.v1"
 )
+
+func (s *S) TestTeamList(c *check.C) {
+	expected := []tsuru.Team{
+		{Name: "team1"},
+		{Name: "team2"},
+		{Name: "team2"},
+	}
+	s.tsuruAPI.Teams = expected
+	recorder := httptest.NewRecorder()
+	request, err := http.NewRequest(http.MethodGet, "/teams", nil)
+	c.Assert(err, check.IsNil)
+	s.server(recorder, request)
+	c.Assert(recorder.Code, check.Equals, http.StatusOK)
+	var body []tsuru.Team
+	err = json.Unmarshal(recorder.Body.Bytes(), &body)
+	c.Assert(err, check.IsNil)
+	c.Assert(body, check.DeepEquals, expected)
+	c.Assert(recorder.HeaderMap.Get("Content-type"), check.DeepEquals, "application/json")
+}
 
 func (s *S) TestGetTeamUsageGroup(c *check.C) {
 	_, err := plan.Save(plan.PlanCost{Plan: "large", Type: plan.AppPlan, Cost: 3, MeasureUnit: "GB"})
@@ -52,7 +72,7 @@ func (s *S) TestGetTeamUsageGroup(c *check.C) {
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodGet, "/apps/mygroup/2017?group=true", nil)
 	c.Assert(err, check.IsNil)
-	server(recorder, request)
+	s.server(recorder, request)
 	c.Assert(recorder.Code, check.Equals, http.StatusOK)
 	var body []TeamAppUsage
 	err = json.Unmarshal(recorder.Body.Bytes(), &body)
@@ -87,7 +107,7 @@ func (s *S) TestGetTeamAppsUsage(c *check.C) {
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodGet, "/apps/myteam/2017", nil)
 	c.Assert(err, check.IsNil)
-	server(recorder, request)
+	s.server(recorder, request)
 	c.Assert(recorder.Code, check.Equals, http.StatusOK)
 	var body []TeamAppUsage
 	err = json.Unmarshal(recorder.Body.Bytes(), &body)
@@ -131,7 +151,7 @@ func (s *S) TestGetTeamServicesUsage(c *check.C) {
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodGet, "/services/myteam/2017", nil)
 	c.Assert(err, check.IsNil)
-	server(recorder, request)
+	s.server(recorder, request)
 	c.Assert(recorder.Code, check.Equals, http.StatusOK)
 	var body []TeamServiceUsage
 	err = json.Unmarshal(recorder.Body.Bytes(), &body)

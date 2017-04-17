@@ -15,6 +15,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/prometheus/common/model"
 	"github.com/tsuru/tsuru-usage/prom"
+	"github.com/tsuru/tsuru-usage/tsuru"
 )
 
 type TeamPoolUsage struct {
@@ -31,6 +32,19 @@ type PoolUsage struct {
 type monthUsage struct {
 	month time.Month
 	value model.Vector
+}
+
+func listPools(w http.ResponseWriter, r *http.Request, api tsuru.TsuruAPI) error {
+	pools, err := api.ListPools()
+	if err != nil {
+		return err
+	}
+	if len(pools) == 0 {
+		w.WriteHeader(http.StatusNoContent)
+		return nil
+	}
+	w.Header().Set("Content-Type", "application/json")
+	return json.NewEncoder(w).Encode(pools)
 }
 
 func getPoolUsage(w http.ResponseWriter, r *http.Request) error {
