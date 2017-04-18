@@ -16,10 +16,10 @@ import (
 func (s *S) TestPoolList(c *check.C) {
 	data := `[
 	{
-		"Name": "pool a"
+		"Name": "pool b"
 	},
 	{
-		"Name": "pool b"
+		"Name": "pool a"
 	}
 ]`
 	Client.Transport = &cmdtest.Transport{Message: data, Status: http.StatusOK}
@@ -31,8 +31,7 @@ func (s *S) TestPoolList(c *check.C) {
 	m.ServeHTTP(recorder, request)
 	c.Assert(recorder.Code, check.Equals, http.StatusOK)
 	body := recorder.Body.String()
-	c.Assert(body, check.Matches, "(?s).*<select .*pool a.*</select>.*")
-	c.Assert(body, check.Matches, "(?s).*<select .*pool b.*</select>.*")
+	c.Assert(body, check.Matches, "(?s).*<select .*pool a.*pool b.*</select>.*")
 }
 
 func (s *S) TestPoolListAPIError(c *check.C) {
@@ -60,10 +59,10 @@ func (s *S) TestPoolListInvalidJSON(c *check.C) {
 func (s *S) TestTeamList(c *check.C) {
 	data := `[
 	{
-		"Name": "my team"
+		"Name": "other team"
 	},
 	{
-		"Name": "other team"
+		"Name": "my team"
 	}
 ]`
 	Client.Transport = &cmdtest.Transport{Message: data, Status: http.StatusOK}
@@ -75,8 +74,7 @@ func (s *S) TestTeamList(c *check.C) {
 	m.ServeHTTP(recorder, request)
 	c.Assert(recorder.Code, check.Equals, http.StatusOK)
 	body := recorder.Body.String()
-	c.Assert(body, check.Matches, "(?s).*<select .*my team.*</select>.*")
-	c.Assert(body, check.Matches, "(?s).*<select .*other team.*</select>.*")
+	c.Assert(body, check.Matches, "(?s).*<select .*my team.*other team.*</select>.*")
 }
 
 func (s *S) TestTeamListAPIError(c *check.C) {
@@ -104,13 +102,13 @@ func (s *S) TestTeamListInvalidJSON(c *check.C) {
 func (s *S) TestGroupList(c *check.C) {
 	data := `[
 	{
+		"Name": "group 3"
+	},
+	{
 		"Name": "group 1"
 	},
 	{
 		"Name": "group 2"
-	},
-	{
-		"Name": "group 3"
 	}
 ]`
 	Client.Transport = &cmdtest.Transport{Message: data, Status: http.StatusOK}
@@ -122,9 +120,7 @@ func (s *S) TestGroupList(c *check.C) {
 	m.ServeHTTP(recorder, request)
 	c.Assert(recorder.Code, check.Equals, http.StatusOK)
 	body := recorder.Body.String()
-	c.Assert(body, check.Matches, "(?s).*<select .*group 1.*</select>.*")
-	c.Assert(body, check.Matches, "(?s).*<select .*group 2.*</select>.*")
-	c.Assert(body, check.Matches, "(?s).*<select .*group 3.*</select>.*")
+	c.Assert(body, check.Matches, "(?s).*<select .*group 1.*group 2.*group 3.*</select>.*")
 }
 
 func (s *S) TestGroupListAPIError(c *check.C) {

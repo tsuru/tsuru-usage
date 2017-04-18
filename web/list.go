@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sort"
 )
 
 type Pool struct {
@@ -41,6 +42,9 @@ func poolListHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	sort.Slice(pools, func(i, j int) bool {
+		return pools[i].Name < pools[j].Name
+	})
 	render(w, "templates/list/pools.html", pools)
 }
 
@@ -61,6 +65,9 @@ func teamListHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	sort.Slice(teams, func(i, j int) bool {
+		return teams[i].Name < teams[j].Name
+	})
 	render(w, "templates/list/teams.html", teams)
 }
 
@@ -81,5 +88,8 @@ func groupListHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	sort.Slice(groups, func(i, j int) bool {
+		return groups[i].Name < groups[j].Name
+	})
 	render(w, "templates/list/groups.html", groups)
 }
