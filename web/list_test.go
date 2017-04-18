@@ -13,6 +13,50 @@ import (
 	"gopkg.in/check.v1"
 )
 
+func (s *S) TestTeamList(c *check.C) {
+	data := `[
+	{
+		"Name": "my team"
+	},
+	{
+		"Name": "other team"
+	}
+]`
+	Client.Transport = &cmdtest.Transport{Message: data, Status: http.StatusOK}
+	recorder := httptest.NewRecorder()
+	request, err := http.NewRequest("GET", "/web/teams", nil)
+	c.Assert(err, check.IsNil)
+	m := runServer()
+	c.Assert(m, check.NotNil)
+	m.ServeHTTP(recorder, request)
+	c.Assert(recorder.Code, check.Equals, http.StatusOK)
+	body := recorder.Body.String()
+	c.Assert(body, check.Matches, "(?s).*<select .*my team.*</select>.*")
+	c.Assert(body, check.Matches, "(?s).*<select .*other team.*</select>.*")
+}
+
+func (s *S) TestTeamListAPIError(c *check.C) {
+	Client.Transport = &cmdtest.Transport{Status: http.StatusInternalServerError}
+	recorder := httptest.NewRecorder()
+	request, err := http.NewRequest("GET", "/web/teams", nil)
+	c.Assert(err, check.IsNil)
+	m := runServer()
+	c.Assert(m, check.NotNil)
+	m.ServeHTTP(recorder, request)
+	c.Assert(recorder.Code, check.Equals, http.StatusInternalServerError)
+}
+
+func (s *S) TestTeamListInvalidJSON(c *check.C) {
+	Client.Transport = &cmdtest.Transport{Message: "invalid", Status: http.StatusOK}
+	recorder := httptest.NewRecorder()
+	request, err := http.NewRequest("GET", "/web/teams", nil)
+	c.Assert(err, check.IsNil)
+	m := runServer()
+	c.Assert(m, check.NotNil)
+	m.ServeHTTP(recorder, request)
+	c.Assert(recorder.Code, check.Equals, http.StatusInternalServerError)
+}
+
 func (s *S) TestGroupList(c *check.C) {
 	data := `[
 	{

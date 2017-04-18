@@ -1,14 +1,14 @@
 {{define "content"}}
 {{template "back"}}
 
-<h1 class="my-4">Tsuru usage per group</h1>
+<h1 class="my-4">Tsuru usage per team</h1>
 <form>
 	<div class="form-group row">
-		<label for="group" class="col-sm-1 col-form-label">Group</label>
+		<label for="team" class="col-sm-1 col-form-label">Team</label>
 		<div class="col-sm-3">
-			<select name="group" class="form-control">
-				{{range $group := .}}
-					<option value="{{$group.Name}}">{{$group.Name}}</option>
+			<select name="team" class="form-control">
+				{{range $team := .}}
+					<option value="{{$team.Name}}">{{$team.Name}}</option>
 				{{end}}
 			</select>
 		</div>
@@ -25,13 +25,7 @@
 		<div class="offset-sm-1 col-sm-3">
 			<div class="form-check">
 				<label class="form-check-label">
-					<input type="radio" class="form-check-input" name="usageType" id="pools-usage" value="pools" required checked />
-					Pools
-				</label>
-			</div>
-			<div class="form-check">
-				<label class="form-check-label">
-					<input type="radio" class="form-check-input" name="usageType" id="apps-usage" value="apps" required />
+					<input type="radio" class="form-check-input" name="usageType" id="apps-usage" value="apps" required checked />
 					Apps
 				</label>
 			</div>
@@ -53,9 +47,9 @@
 
 <script>
 	const urls = {
-		"pools": "/web/teamgroups/{group}/pools/{year}",
-		"apps": "/web/apps/{group}/{year}?group=true",
-		"services": "/web/services/{group}/{year}?group=true"
+		"pools": "/web/pools/{team}/{year}",
+		"apps": "/web/apps/{team}/{year}?group=false",
+		"services": "/web/services/{team}/{year}?group=false"
 	};
 	var form = document.querySelector("form");
 	form.addEventListener("submit", event => {
@@ -66,7 +60,7 @@
 		for (var [name, value] of formData.entries()) {
 			data[name] = value;
 		}
-		const url = urls[data.usageType].replace("{group}", data.group).replace("{year}", data.year);
+		const url = urls[data.usageType].replace("{team}", data.team).replace("{year}", data.year);
 		window.location = url;
 	});
 </script>

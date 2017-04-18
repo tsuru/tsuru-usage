@@ -46,6 +46,7 @@ var Client = &http.Client{}
 // Router return a http.Handler with all web routes
 func Router(m *mux.Router) {
 	m.HandleFunc("/", indexHandler).Methods("GET")
+	m.HandleFunc("/teams", teamListHandler).Methods("GET")
 	m.HandleFunc("/teamgroups", groupListHandler).Methods("GET")
 	m.HandleFunc("/pools", poolListHandler).Methods("GET")
 	m.HandleFunc("/pools/{name}/{year}", poolUsageHandler).Methods("GET")
