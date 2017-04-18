@@ -6,7 +6,8 @@
 	<div class="form-group row">
 		<label for="group" class="col-sm-1 col-form-label">Group</label>
 		<div class="col-sm-3">
-			<select name="group" class="form-control">
+			<select name="group" class="form-control" required>
+				<option value="">-</option>
 				{{range $group := .}}
 					<option value="{{$group.Name}}">{{$group.Name}}</option>
 				{{end}}
