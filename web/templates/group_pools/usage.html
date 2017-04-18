@@ -1,7 +1,11 @@
 {{define "content"}}
 {{template "back"}}
 
-<h1 class="my-4">Pools usage for group <strong>{{.Group}}</strong> in {{.Year}}</h1>
+<h1 class="my-4">Pools usage for group <strong>{{.Group.Name}}</strong> in {{.Year}}</h1>
+
+{{if .Group}}
+	{{template "group_info" .Group}}
+{{end}}
 
 {{template "tabs" .TabData}}
 

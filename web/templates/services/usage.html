@@ -3,6 +3,10 @@
 
 <h1 class="my-4">Services usage for {{.GroupingType}} <strong>{{.TeamOrGroup}}</strong> in {{.Year}}</h1>
 
+{{if .Group}}
+	{{template "group_info" .Group}}
+{{end}}
+
 {{template "tabs" .TabData}}
 
 <table class="table table-hover">

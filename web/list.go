@@ -21,10 +21,6 @@ type Team struct {
 	Name string
 }
 
-type Group struct {
-	Name string
-}
-
 func poolListHandler(w http.ResponseWriter, r *http.Request) {
 	host := os.Getenv("API_HOST")
 	url := fmt.Sprintf("%s/api/pools", host)
@@ -72,24 +68,11 @@ func teamListHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func groupListHandler(w http.ResponseWriter, r *http.Request) {
-	host := os.Getenv("API_HOST")
-	url := fmt.Sprintf("%s/api/teamgroups", host)
-	response, err := Client.Get(url)
-	if err != nil || response.StatusCode != http.StatusOK {
-		log.Printf("Error fetching %s: %s", url, err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	defer response.Body.Close()
-	var groups []Group
-	err = json.NewDecoder(response.Body).Decode(&groups)
+	groups, err := fetchGroups()
 	if err != nil {
-		log.Printf("Error decoding response body: %s", err)
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	sort.Slice(groups, func(i, j int) bool {
-		return groups[i].Name < groups[j].Name
-	})
 	render(w, "templates/list/groups.html", groups)
 }

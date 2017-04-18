@@ -29,10 +29,16 @@ type TotalGroupPoolUsage struct {
 
 func groupPoolUsageHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	group := vars["group"]
+	groupName := vars["group"]
 	year := vars["year"]
+	group, err := fetchGroup(groupName)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	host := os.Getenv("API_HOST")
-	url := fmt.Sprintf("%s/api/teamgroups/%s/pools/%s", host, group, year)
+	url := fmt.Sprintf("%s/api/teamgroups/%s/pools/%s", host, groupName, year)
 	response, err := Client.Get(url)
 	if err != nil || response.StatusCode != http.StatusOK {
 		log.Printf("Error fetching %s: %s", url, err)
@@ -49,22 +55,22 @@ func groupPoolUsageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	tabData := TabData{
 		ActiveTab:    "pools",
-		TeamOrGroup:  group,
+		TeamOrGroup:  groupName,
 		GroupingType: "group",
 		Year:         year,
 	}
 	context := struct {
-		Group      string
 		Year       string
 		Usage      []GroupPoolUsage
 		TotalUsage TotalGroupPoolUsage
 		TabData    TabData
+		Group      *Group
 	}{
-		group,
 		year,
 		usage,
 		totalGroupPoolUsage(usage),
 		tabData,
+		group,
 	}
 	err = render(w, "templates/group_pools/usage.html", context)
 	if err != nil {

@@ -55,13 +55,21 @@ func appUsageHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	teamOrGroup := vars["teamOrGroup"]
 	year := vars["year"]
-	group, _ := strconv.ParseBool(r.FormValue("group"))
+	isGroup, _ := strconv.ParseBool(r.FormValue("group"))
 	groupingType := "team"
-	if group {
+	var group *Group
+	var err error
+	if isGroup {
 		groupingType = "group"
+		group, err = fetchGroup(teamOrGroup)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 	}
 	host := os.Getenv("API_HOST")
-	url := fmt.Sprintf("%s/api/apps/%s/%s?group=%t", host, teamOrGroup, year, group)
+	url := fmt.Sprintf("%s/api/apps/%s/%s?group=%t", host, teamOrGroup, year, isGroup)
 	response, err := Client.Get(url)
 	if err != nil || response.StatusCode != http.StatusOK {
 		log.Printf("Error fetching %s: %s", url, err)
@@ -89,6 +97,7 @@ func appUsageHandler(w http.ResponseWriter, r *http.Request) {
 		Usage        []AppUsage
 		Total        TotalAppCost
 		TabData      TabData
+		Group        *Group
 	}{
 		teamOrGroup,
 		groupingType,
@@ -96,6 +105,7 @@ func appUsageHandler(w http.ResponseWriter, r *http.Request) {
 		usage,
 		totalAppCost(usage),
 		tabData,
+		group,
 	}
 	err = render(w, "templates/apps/usage.html", context)
 	if err != nil {
