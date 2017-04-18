@@ -1,0 +1,74 @@
+{{define "content"}}
+{{template "back"}}
+
+<h1 class="my-4">Tsuru usage per group</h1>
+<form>
+	<div class="form-group row">
+		<label for="pool" class="col-sm-1 col-form-label">Group</label>
+		<div class="col-sm-3">
+			<select name="group" class="form-control">
+				{{range $group := .}}
+					<option value="{{$group.Name}}">{{$group.Name}}</option>
+				{{end}}
+			</select>
+		</div>
+	</div>
+
+	<div class="form-group row">
+		<label for="year" class="col-sm-1 col-form-label">Year</label>
+		<div class="col-sm-3">
+			<input type="number" size="4" name="year" required class="form-control" />
+		</div>
+	</div>
+
+	<div class="form-group row">
+		<div class="offset-sm-1 col-sm-3">
+			<div class="form-check">
+				<label class="form-check-label">
+					<input type="radio" class="form-check-input" name="usageType" id="pools-usage" value="pools" required checked />
+					Pools
+				</label>
+			</div>
+			<div class="form-check">
+				<label class="form-check-label">
+					<input type="radio" class="form-check-input" name="usageType" id="apps-usage" value="apps" required />
+					Apps
+				</label>
+			</div>
+			<div class="form-check">
+				<label class="form-check-label">
+					<input type="radio" class="form-check-input" name="usageType" id="services-usage" value="services" required />
+					Services
+				</label>
+			</div>
+		</div>
+	</div>
+
+	<div class="form-group row mt-4">
+		<div class="offset-sm-1 col-sm-3">
+			<button type="submit" class="btn btn-primary btn-lg">Run</button>
+		</div>
+	</div>
+</form>
+
+<script>
+	const urls = {
+		"pools": "/web/teamgroups/{group}/pools/{year}",
+		"apps": "/web/apps/{group}/{year}?group=true",
+		"services": "/web/services/{group}/{year}?group=true"
+	};
+	var form = document.querySelector("form");
+	form.addEventListener("submit", event => {
+		event.preventDefault();
+
+		var formData = new FormData(event.target);
+		var data = {};
+		for (var [name, value] of formData.entries()) {
+			data[name] = value;
+		}
+		const url = urls[data.usageType].replace("{group}", data.group).replace("{year}", data.year);
+		window.location = url;
+	});
+</script>
+{{end}}
+
