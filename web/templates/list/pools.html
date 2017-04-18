@@ -1,0 +1,47 @@
+{{define "content"}}
+{{template "back"}}
+
+<h1 class="my-4">Tsuru usage per pool</h1>
+<form>
+	<div class="form-group row">
+		<label for="pool" class="col-sm-1 col-form-label">Pool</label>
+		<div class="col-sm-3">
+			<select name="pool" class="form-control">
+				{{range $pool := .}}
+					<option value="{{$pool.Name}}">{{$pool.Name}}</option>
+				{{end}}
+			</select>
+		</div>
+	</div>
+
+	<div class="form-group row">
+		<label for="year" class="col-sm-1 col-form-label">Year</label>
+		<div class="col-sm-3">
+			<input type="number" size="4" name="year" required class="form-control" />
+		</div>
+	</div>
+
+	<div class="form-group row mt-4">
+		<div class="offset-sm-1 col-sm-3">
+			<button type="submit" class="btn btn-primary btn-lg">Run</button>
+		</div>
+	</div>
+</form>
+
+<script>
+	const poolsUrl = "/web/pools/{pool}/{year}";
+	var form = document.querySelector("form");
+	form.addEventListener("submit", event => {
+		event.preventDefault();
+
+		var formData = new FormData(event.target);
+		var data = {};
+		for (var [name, value] of formData.entries()) {
+			data[name] = value;
+		}
+		const url = poolsUrl.replace("{pool}", data.pool).replace("{year}", data.year);
+		window.location = url;
+	});
+</script>
+{{end}}
+

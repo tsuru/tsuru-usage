@@ -20,11 +20,6 @@ type PoolUsage struct {
 	Usage UsageValue
 }
 
-func poolListHandler(w http.ResponseWriter, r *http.Request) {
-	pools := []string{"staging", "prod", "workshop"}
-	render(w, "templates/pools/index.html", pools)
-}
-
 func poolUsageHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	pool := vars["name"]

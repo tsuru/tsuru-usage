@@ -12,12 +12,36 @@ import (
 	"os"
 )
 
+type Pool struct {
+	Name string
+}
+
 type Team struct {
 	Name string
 }
 
 type Group struct {
 	Name string
+}
+
+func poolListHandler(w http.ResponseWriter, r *http.Request) {
+	host := os.Getenv("API_HOST")
+	url := fmt.Sprintf("%s/api/pools", host)
+	response, err := Client.Get(url)
+	if err != nil || response.StatusCode != http.StatusOK {
+		log.Printf("Error fetching %s: %s", url, err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	defer response.Body.Close()
+	var pools []Pool
+	err = json.NewDecoder(response.Body).Decode(&pools)
+	if err != nil {
+		log.Printf("Error decoding response body: %s", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	render(w, "templates/list/pools.html", pools)
 }
 
 func teamListHandler(w http.ResponseWriter, r *http.Request) {
