@@ -41,6 +41,8 @@ func (fn handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+var Client = &http.Client{}
+
 // Router return a http.Handler with all web routes
 func Router(m *mux.Router) {
 	m.HandleFunc("/", indexHandler).Methods("GET")
@@ -48,8 +50,6 @@ func Router(m *mux.Router) {
 	m.HandleFunc("/pools", poolListHandler).Methods("GET")
 	m.HandleFunc("/pools/{name}/{year}", poolUsageHandler).Methods("GET")
 	m.HandleFunc("/teamgroups/{group}/pools/{year}", groupPoolUsageHandler).Methods("GET")
-	m.HandleFunc("/apps", appTeamListHandler).Methods("GET")
 	m.HandleFunc("/apps/{teamOrGroup}/{year}", appUsageHandler).Methods("GET")
-	m.HandleFunc("/services", serviceTeamListHandler).Methods("GET")
 	m.HandleFunc("/services/{teamOrGroup}/{year}", serviceUsageHandler).Methods("GET")
 }

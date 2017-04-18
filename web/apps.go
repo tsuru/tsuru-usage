@@ -15,8 +15,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var Client = &http.Client{}
-
 type AppCost struct {
 	MeasureUnit string
 	UnitCost    UsageValue
@@ -51,11 +49,6 @@ func (a AppCost) TotalCostValue() string {
 		return str
 	}
 	return fmt.Sprintf("%s %s", str, a.MeasureUnit)
-}
-
-func appTeamListHandler(w http.ResponseWriter, r *http.Request) {
-	teams := []string{"team1", "team2", "team3", "team4"}
-	render(w, "templates/apps/index.html", teams)
 }
 
 func appUsageHandler(w http.ResponseWriter, r *http.Request) {

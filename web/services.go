@@ -61,11 +61,6 @@ func (t TotalServiceCost) MonthValue(month string) string {
 	return fmt.Sprintf("%s %s", str, t.MeasureUnit)
 }
 
-func serviceTeamListHandler(w http.ResponseWriter, r *http.Request) {
-	teams := []string{"team 1", "team 2", "team 3", "team 4"}
-	render(w, "templates/services/index.html", teams)
-}
-
 func serviceUsageHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	teamOrGroup := vars["teamOrGroup"]
