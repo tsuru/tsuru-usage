@@ -15,7 +15,12 @@ import (
 )
 
 func (s *S) TestServiceUsage(c *check.C) {
-	data := `[
+	groupData := `{
+	"Name": "group 1",
+	"Teams": ["team 1", "team 2"],
+	"Pools": ["pool 1", "pool 2"]
+}`
+	usageData := `[
 	{
 		"Month": "January",
 		"Usage": [
@@ -57,7 +62,7 @@ func (s *S) TestServiceUsage(c *check.C) {
 		]
 	}
 ]`
-	Client.Transport = &cmdtest.Transport{Message: data, Status: http.StatusOK}
+	Client.Transport = makeMultiConditionalTransport([]string{groupData, usageData})
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest("GET", "/web/services/mygroup/2017?group=true", nil)
 	c.Assert(err, check.IsNil)
