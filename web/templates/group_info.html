@@ -1,31 +1,50 @@
 {{define "group_info"}}
-<div class="popover offset-sm-2" style="position: initial; margin-top: 40px">
-	<h3 class="popover-title" style="cursor: pointer; display: flex; align-items: center" onclick="toggleGroupInfo()">
-		<svg height="32" class="octicon octicon-plus-small" viewBox="0 0 7 16" version="1.1" width="14" aria-hidden="true"><path fill-rule="evenodd" d="M4 7V4H3v3H0v1h3v3h1V8h3V7H4z"></path></svg>
-		<span style="margin-left: 10px">Group info</span>
-	</h3>
+<div class="offset-sm-2 col-sm-5" style="margin-top: 40px">
+	<div class="card">
+		<div class="card-header" style="cursor: pointer; display: flex; align-items: center" onclick="toggleGroupInfo()">
+			<svg height="32" class="octicon octicon-plus-small" viewBox="0 0 7 16" version="1.1" width="14" aria-hidden="true"><path fill-rule="evenodd" d="M4 7V4H3v3H0v1h3v3h1V8h3V7H4z"></path></svg>
+			<h5 style="margin: 0 0 0 10px">Group info</h5>
+		</div>
 
-	<div id="group-info" class="popover-content" style="display: none">
-		<h3>Teams</h3>
-		<ul>
-			{{range $team:= .Teams}}
-				<li>{{$team}}</li>
-			{{end}}
-		</ul>
+		<div id="group-info">
+			<div style="flex-grow: 1">
+				<h5 class="card-header">Teams</h5>
+				<ul class="list-group">
+					{{range $team:= .Teams}}
+						<li class="list-group-item">{{$team}}</li>
+					{{end}}
+				</ul>
+			</div>
 
-		<h3>Pools</h3>
-		<ul>
-			{{range $pool:= .Pools}}
-				<li>{{$pool}}</li>
-			{{end}}
-		</ul>
+			<div style="flex-grow: 1">
+				<h5 class="card-header">Pools</h5>
+				<ul class="list-group">
+					{{range $pool:= .Pools}}
+						<li class="list-group-item">{{$pool}}</li>
+					{{end}}
+				</ul>
+			</div>
+		</div>
 	</div>
 </div>
+
+<style>
+	#group-info {
+		max-height: 0;
+		transition: max-height 0.3s ease-out;
+		overflow: hidden;
+		display: flex;
+	}
+	#group-info.visible {
+		max-height: 500px;
+		transition: max-height 0.8s ease-in;
+	}
+</style>
 
 <script>
 	function toggleGroupInfo() {
 		const info = document.querySelector("#group-info");
-		info.style.display = info.style.display === "block" ? "none" : "block";
+		info.className = info.className.length === 0 ? "visible" : "";
 	}
 </script>
 {{end}}
