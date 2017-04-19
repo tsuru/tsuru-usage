@@ -57,6 +57,7 @@ func appUsageHandler(w http.ResponseWriter, r *http.Request) {
 	year := vars["year"]
 	isGroup, _ := strconv.ParseBool(r.FormValue("group"))
 	groupingType := "team"
+	backURL := "/web/teams"
 	var group *Group
 	var err error
 	if isGroup {
@@ -67,6 +68,7 @@ func appUsageHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
+		backURL = "/web/teamgroups"
 	}
 	host := os.Getenv("API_HOST")
 	url := fmt.Sprintf("%s/api/apps/%s/%s?group=%t", host, teamOrGroup, year, isGroup)
@@ -98,6 +100,7 @@ func appUsageHandler(w http.ResponseWriter, r *http.Request) {
 		Total        TotalAppCost
 		TabData      TabData
 		Group        *Group
+		BackURL      string
 	}{
 		teamOrGroup,
 		groupingType,
@@ -106,6 +109,7 @@ func appUsageHandler(w http.ResponseWriter, r *http.Request) {
 		totalAppCost(usage),
 		tabData,
 		group,
+		backURL,
 	}
 	err = render(w, "templates/apps/usage.html", context)
 	if err != nil {

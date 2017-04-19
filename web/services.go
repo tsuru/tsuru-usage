@@ -69,6 +69,7 @@ func serviceUsageHandler(w http.ResponseWriter, r *http.Request) {
 	groupingType := "team"
 	var group *Group
 	var err error
+	backURL := "/web/teams"
 	if isGroup {
 		groupingType = "group"
 		group, err = fetchGroup(teamOrGroup)
@@ -77,6 +78,7 @@ func serviceUsageHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
+		backURL = "/web/teamgroups"
 	}
 	host := os.Getenv("API_HOST")
 	url := fmt.Sprintf("%s/api/services/%s/%s?group=%t", host, teamOrGroup, year, isGroup)
@@ -108,6 +110,7 @@ func serviceUsageHandler(w http.ResponseWriter, r *http.Request) {
 		Total        TotalServiceCost
 		TabData      TabData
 		Group        *Group
+		BackURL      string
 	}{
 		teamOrGroup,
 		groupingType,
@@ -116,6 +119,7 @@ func serviceUsageHandler(w http.ResponseWriter, r *http.Request) {
 		totalServiceCost(usage),
 		tabData,
 		group,
+		backURL,
 	}
 	err = render(w, "templates/services/usage.html", context)
 	if err != nil {
