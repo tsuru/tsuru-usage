@@ -1,6 +1,6 @@
 {{define "content"}}
 <h1 class="my-4">Edit group <strong>{{.Group.Name}}</strong></h1>
-<form method="POST" action="/admin/teamgroups/{{.Group.Name}}">
+<form method="PUT" action="/admin/teamgroups/{{.Group.Name}}">
   <div class="form-group row">
     <div class="col-sm-6">
       <label for="group">Teams</label>

@@ -31,4 +31,5 @@ func Router(m *mux.Router) {
 	})
 	m.HandleFunc("/teamgroups", groupListHandler)
 	m.HandleFunc("/teamgroups/{name}", groupEditHandler).Methods(http.MethodGet)
+	m.HandleFunc("/teamgroups/{name}", groupUpdateHandler).Methods(http.MethodPut)
 }

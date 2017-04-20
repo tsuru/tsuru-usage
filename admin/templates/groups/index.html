@@ -1,5 +1,5 @@
 {{define "content"}}
-<h1 class="my-4">Tsuru usage admin</h1>
+<h1 class="my-4">Groups</h1>
 <table class="table table-hover">
   <tr>
     <th>Group</th>
@@ -8,7 +8,7 @@
   </tr>
   {{range $group := .Groups}}
     <tr>
-      <td>{{$group.Name}}</td>
+      <td><a href="/admin/teamgroups/{{$group.Name}}">{{$group.Name}}</a></td>
       <td>{{StringsJoin $group.Teams ", "}}</td>
       <td>{{StringsJoin $group.Pools ", "}}</td>
     </tr>

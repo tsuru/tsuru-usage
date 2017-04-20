@@ -65,3 +65,23 @@ func groupEditHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 }
+
+func groupUpdateHandler(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	vars := mux.Vars(r)
+	group := repositories.Group{
+		Name:  vars["name"],
+		Teams: r.Form["teams"],
+		Pools: r.Form["pools"],
+	}
+	err = repositories.UpdateGroup(group)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	http.Redirect(w, r, "/admin/teamgroups", 302)
+}
