@@ -23,7 +23,7 @@ func groupListHandler(w http.ResponseWriter, r *http.Request) {
 	}{
 		groups,
 	}
-	err = render(w, "templates/index.html", context)
+	err = render(w, "templates/groups/index.html", context)
 	if err != nil {
 		log.Println(err)
 	}

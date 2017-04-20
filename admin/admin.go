@@ -26,5 +26,8 @@ func (fn handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // Router return a http.Handler with all web routes
 func Router(m *mux.Router) {
-	m.HandleFunc("/", groupListHandler).Methods("GET")
+	m.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/admin/teamgroups", 301)
+	})
+	m.HandleFunc("/teamgroups", groupListHandler)
 }
