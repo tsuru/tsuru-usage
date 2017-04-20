@@ -25,9 +25,14 @@ type Group struct {
 func FetchGroup(name string) (*Group, error) {
 	url := fmt.Sprintf("%s/api/teamgroups/%s", apiHost, name)
 	response, err := Client.Get(url)
-	status := response.StatusCode
-	if err != nil || (status != http.StatusOK && status != http.StatusNotFound) {
+	if err != nil {
 		errMsg := fmt.Sprintf("Error fetching %s: %s", url, err.Error())
+		log.Printf(errMsg)
+		return nil, errors.New(errMsg)
+	}
+	status := response.StatusCode
+	if status != http.StatusOK && status != http.StatusNotFound {
+		errMsg := fmt.Sprintf("Error fetching %s: HTTP %d", url, status)
 		log.Printf(errMsg)
 		return nil, errors.New(errMsg)
 	}
@@ -49,8 +54,14 @@ func FetchGroups() ([]Group, error) {
 	host := os.Getenv("API_HOST")
 	url := fmt.Sprintf("%s/api/teamgroups", host)
 	response, err := Client.Get(url)
-	if err != nil || response.StatusCode != http.StatusOK {
+	if err != nil {
 		errMsg := fmt.Sprintf("Error fetching %s: %s", url, err.Error())
+		log.Printf(errMsg)
+		return nil, errors.New(errMsg)
+	}
+	status := response.StatusCode
+	if status != http.StatusOK {
+		errMsg := fmt.Sprintf("Error fetching %s: HTTP %d", url, status)
 		log.Printf(errMsg)
 		return nil, errors.New(errMsg)
 	}
