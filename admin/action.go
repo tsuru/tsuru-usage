@@ -21,7 +21,8 @@ func render(w http.ResponseWriter, templatePath string, data interface{}) error 
 		dir + "/" + templatePath,
 		dir + "/templates/base.html",
 	}
-	t, err := template.ParseFiles(templates...)
+	funcMap := template.FuncMap{"StringsJoin": strings.Join}
+	t, err := template.New("base.html").Funcs(funcMap).ParseFiles(templates...)
 	if err != nil {
 		log.Printf("Error parsing template %s: %s", templatePath, err)
 		w.WriteHeader(http.StatusInternalServerError)

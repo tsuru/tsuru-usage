@@ -9,8 +9,8 @@
   {{range $group := .Groups}}
     <tr>
       <td>{{$group.Name}}</td>
-      <td>{{$group.Teams}}</td>
-      <td>{{$group.Pools}}</td>
+      <td>{{StringsJoin $group.Teams ", "}}</td>
+      <td>{{StringsJoin $group.Pools ", "}}</td>
     </tr>
   {{end}}
 </table>
