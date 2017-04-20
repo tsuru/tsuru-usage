@@ -9,6 +9,7 @@ import (
 	"net/http/httptest"
 	"strings"
 
+	"github.com/tsuru/tsuru-usage/repositories"
 	"github.com/tsuru/tsuru/cmd/cmdtest"
 
 	"gopkg.in/check.v1"
@@ -44,7 +45,8 @@ func (s *S) TestGroupPoolUsage(c *check.C) {
 		]
 	}
 ]`
-	Client.Transport = makeMultiConditionalTransport([]string{groupData, usageData})
+	repositories.Client.Transport = &cmdtest.Transport{Message: groupData, Status: http.StatusOK}
+	Client.Transport = &cmdtest.Transport{Message: usageData, Status: http.StatusOK}
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest("GET", "/web/teamgroups/mygroup/pools/2017", nil)
 	c.Assert(err, check.IsNil)
@@ -67,7 +69,7 @@ func (s *S) TestGroupPoolUsage(c *check.C) {
 }
 
 func (s *S) TestGroupPoolUsageAPIError(c *check.C) {
-	Client.Transport = &cmdtest.Transport{Status: http.StatusInternalServerError}
+	repositories.Client.Transport = &cmdtest.Transport{Status: http.StatusInternalServerError}
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest("GET", "/web/teamgroups/mygroup/pools/2017", nil)
 	c.Assert(err, check.IsNil)
@@ -78,7 +80,7 @@ func (s *S) TestGroupPoolUsageAPIError(c *check.C) {
 }
 
 func (s *S) TestGroupPoolUsageInvalidJSON(c *check.C) {
-	Client.Transport = &cmdtest.Transport{Message: "invalid", Status: http.StatusOK}
+	repositories.Client.Transport = &cmdtest.Transport{Message: "invalid", Status: http.StatusOK}
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest("GET", "/web/teamgroups/mygroup/pools/2017", nil)
 	c.Assert(err, check.IsNil)

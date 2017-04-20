@@ -5,11 +5,9 @@
 package web
 
 import (
-	"net/http"
 	"testing"
 
 	"github.com/gorilla/mux"
-	"github.com/tsuru/tsuru/cmd/cmdtest"
 
 	"gopkg.in/check.v1"
 )
@@ -24,16 +22,4 @@ func runServer() *mux.Router {
 	r := mux.NewRouter()
 	Router(r.PathPrefix("/web").Subrouter())
 	return r
-}
-
-func makeMultiConditionalTransport(messages []string) *cmdtest.MultiConditionalTransport {
-	trueFunc := func(*http.Request) bool { return true }
-	cts := make([]cmdtest.ConditionalTransport, len(messages))
-	for i, message := range messages {
-		cts[i] = cmdtest.ConditionalTransport{
-			Transport: cmdtest.Transport{Message: message, Status: http.StatusOK},
-			CondFunc:  trueFunc,
-		}
-	}
-	return &cmdtest.MultiConditionalTransport{ConditionalTransports: cts}
 }

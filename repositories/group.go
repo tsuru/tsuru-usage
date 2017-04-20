@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package web
+package repositories
 
 import (
 	"encoding/json"
@@ -19,7 +19,9 @@ type Group struct {
 	Pools []string
 }
 
-func fetchGroup(name string) (*Group, error) {
+var Client = &http.Client{}
+
+func FetchGroup(name string) (*Group, error) {
 	host := os.Getenv("API_HOST")
 	url := fmt.Sprintf("%s/api/teamgroups/%s", host, name)
 	response, err := Client.Get(url)
@@ -36,7 +38,7 @@ func fetchGroup(name string) (*Group, error) {
 	return &group, nil
 }
 
-func fetchGroups() ([]Group, error) {
+func FetchGroups() ([]Group, error) {
 	host := os.Getenv("API_HOST")
 	url := fmt.Sprintf("%s/api/teamgroups", host)
 	response, err := Client.Get(url)

@@ -9,6 +9,7 @@ import (
 	"net/http/httptest"
 	"strings"
 
+	"github.com/tsuru/tsuru-usage/repositories"
 	"github.com/tsuru/tsuru/cmd/cmdtest"
 
 	"gopkg.in/check.v1"
@@ -62,7 +63,8 @@ func (s *S) TestServiceUsage(c *check.C) {
 		]
 	}
 ]`
-	Client.Transport = makeMultiConditionalTransport([]string{groupData, usageData})
+	repositories.Client.Transport = &cmdtest.Transport{Message: groupData, Status: http.StatusOK}
+	Client.Transport = &cmdtest.Transport{Message: usageData, Status: http.StatusOK}
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest("GET", "/web/services/mygroup/2017?group=true", nil)
 	c.Assert(err, check.IsNil)

@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 
+	"github.com/tsuru/tsuru-usage/repositories"
 	"github.com/tsuru/tsuru/cmd/cmdtest"
 
 	"gopkg.in/check.v1"
@@ -111,7 +112,7 @@ func (s *S) TestGroupList(c *check.C) {
 		"Name": "group 2"
 	}
 ]`
-	Client.Transport = &cmdtest.Transport{Message: data, Status: http.StatusOK}
+	repositories.Client.Transport = &cmdtest.Transport{Message: data, Status: http.StatusOK}
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest("GET", "/web/teamgroups", nil)
 	c.Assert(err, check.IsNil)
@@ -124,7 +125,7 @@ func (s *S) TestGroupList(c *check.C) {
 }
 
 func (s *S) TestGroupListAPIError(c *check.C) {
-	Client.Transport = &cmdtest.Transport{Status: http.StatusInternalServerError}
+	repositories.Client.Transport = &cmdtest.Transport{Status: http.StatusInternalServerError}
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest("GET", "/web/teamgroups", nil)
 	c.Assert(err, check.IsNil)
@@ -135,7 +136,7 @@ func (s *S) TestGroupListAPIError(c *check.C) {
 }
 
 func (s *S) TestGroupListInvalidJSON(c *check.C) {
-	Client.Transport = &cmdtest.Transport{Message: "invalid", Status: http.StatusOK}
+	repositories.Client.Transport = &cmdtest.Transport{Message: "invalid", Status: http.StatusOK}
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest("GET", "/web/teamgroups", nil)
 	c.Assert(err, check.IsNil)

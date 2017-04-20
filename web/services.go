@@ -13,6 +13,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/tsuru/tsuru-usage/repositories"
 )
 
 type ServiceCost struct {
@@ -67,12 +68,12 @@ func serviceUsageHandler(w http.ResponseWriter, r *http.Request) {
 	year := vars["year"]
 	isGroup, _ := strconv.ParseBool(r.FormValue("group"))
 	groupingType := "team"
-	var group *Group
+	var group *repositories.Group
 	var err error
 	backURL := "/web/teams"
 	if isGroup {
 		groupingType = "group"
-		group, err = fetchGroup(teamOrGroup)
+		group, err = repositories.FetchGroup(teamOrGroup)
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -109,7 +110,7 @@ func serviceUsageHandler(w http.ResponseWriter, r *http.Request) {
 		Usage        []ServiceUsage
 		Total        TotalServiceCost
 		TabData      TabData
-		Group        *Group
+		Group        *repositories.Group
 		BackURL      string
 	}{
 		teamOrGroup,

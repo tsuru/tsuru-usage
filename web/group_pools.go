@@ -12,6 +12,7 @@ import (
 	"os"
 
 	"github.com/gorilla/mux"
+	"github.com/tsuru/tsuru-usage/repositories"
 )
 
 type GroupPoolUsage struct {
@@ -31,7 +32,7 @@ func groupPoolUsageHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	groupName := vars["group"]
 	year := vars["year"]
-	group, err := fetchGroup(groupName)
+	group, err := repositories.FetchGroup(groupName)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -64,7 +65,7 @@ func groupPoolUsageHandler(w http.ResponseWriter, r *http.Request) {
 		Usage      []GroupPoolUsage
 		TotalUsage TotalGroupPoolUsage
 		TabData    TabData
-		Group      *Group
+		Group      *repositories.Group
 	}{
 		year,
 		usage,

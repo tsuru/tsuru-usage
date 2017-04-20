@@ -13,6 +13,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/tsuru/tsuru-usage/repositories"
 )
 
 type AppCost struct {
@@ -58,11 +59,11 @@ func appUsageHandler(w http.ResponseWriter, r *http.Request) {
 	isGroup, _ := strconv.ParseBool(r.FormValue("group"))
 	groupingType := "team"
 	backURL := "/web/teams"
-	var group *Group
+	var group *repositories.Group
 	var err error
 	if isGroup {
 		groupingType = "group"
-		group, err = fetchGroup(teamOrGroup)
+		group, err = repositories.FetchGroup(teamOrGroup)
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -99,7 +100,7 @@ func appUsageHandler(w http.ResponseWriter, r *http.Request) {
 		Usage        []AppUsage
 		Total        TotalAppCost
 		TabData      TabData
-		Group        *Group
+		Group        *repositories.Group
 		BackURL      string
 	}{
 		teamOrGroup,

@@ -11,6 +11,8 @@ import (
 	"net/http"
 	"os"
 	"sort"
+
+	"github.com/tsuru/tsuru-usage/repositories"
 )
 
 type Pool struct {
@@ -68,7 +70,7 @@ func teamListHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func groupListHandler(w http.ResponseWriter, r *http.Request) {
-	groups, err := fetchGroups()
+	groups, err := repositories.FetchGroups()
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
