@@ -5,44 +5,17 @@
 package web
 
 import (
-	"encoding/json"
-	"fmt"
-	"log"
 	"net/http"
-	"os"
-	"sort"
 
 	"github.com/tsuru/tsuru-usage/repositories"
 )
 
-type Pool struct {
-	Name string
-}
-
-type Team struct {
-	Name string
-}
-
 func poolListHandler(w http.ResponseWriter, r *http.Request) {
-	host := os.Getenv("API_HOST")
-	url := fmt.Sprintf("%s/api/pools", host)
-	response, err := Client.Get(url)
-	if err != nil || response.StatusCode != http.StatusOK {
-		log.Printf("Error fetching %s: %s", url, err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	defer response.Body.Close()
-	var pools []Pool
-	err = json.NewDecoder(response.Body).Decode(&pools)
+	pools, err := repositories.FetchPools()
 	if err != nil {
-		log.Printf("Error decoding response body: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	sort.Slice(pools, func(i, j int) bool {
-		return pools[i].Name < pools[j].Name
-	})
 	render(w, "templates/list/pools.html", pools)
 }
 

@@ -23,7 +23,7 @@ func (s *S) TestPoolList(c *check.C) {
 		"Name": "pool a"
 	}
 ]`
-	Client.Transport = &cmdtest.Transport{Message: data, Status: http.StatusOK}
+	repositories.Client.Transport = &cmdtest.Transport{Message: data, Status: http.StatusOK}
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest("GET", "/web/pools", nil)
 	c.Assert(err, check.IsNil)
@@ -36,7 +36,7 @@ func (s *S) TestPoolList(c *check.C) {
 }
 
 func (s *S) TestPoolListAPIError(c *check.C) {
-	Client.Transport = &cmdtest.Transport{Status: http.StatusInternalServerError}
+	repositories.Client.Transport = &cmdtest.Transport{Status: http.StatusInternalServerError}
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest("GET", "/web/pools", nil)
 	c.Assert(err, check.IsNil)
@@ -47,7 +47,7 @@ func (s *S) TestPoolListAPIError(c *check.C) {
 }
 
 func (s *S) TestPoolListInvalidJSON(c *check.C) {
-	Client.Transport = &cmdtest.Transport{Message: "invalid", Status: http.StatusOK}
+	repositories.Client.Transport = &cmdtest.Transport{Message: "invalid", Status: http.StatusOK}
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest("GET", "/web/pools", nil)
 	c.Assert(err, check.IsNil)
