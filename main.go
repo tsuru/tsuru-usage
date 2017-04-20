@@ -14,6 +14,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/tsuru/tsuru-usage/admin"
 	"github.com/tsuru/tsuru-usage/api"
 	"github.com/tsuru/tsuru-usage/exporter"
 	"github.com/tsuru/tsuru-usage/tsuru"
@@ -61,6 +62,8 @@ func router(tsuruAPI tsuru.TsuruAPI) http.Handler {
 	api.Router(apiRouter, tsuruAPI)
 	webRouter := r.PathPrefix("/web").Subrouter()
 	web.Router(webRouter)
+	adminRouter := r.PathPrefix("/admin").Subrouter()
+	admin.Router(adminRouter)
 	n := negroni.Classic()
 	r.Handle("/metrics", promhttp.Handler())
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
