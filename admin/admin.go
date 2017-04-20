@@ -30,4 +30,5 @@ func Router(m *mux.Router) {
 		http.Redirect(w, r, "/admin/teamgroups", 301)
 	})
 	m.HandleFunc("/teamgroups", groupListHandler)
+	m.HandleFunc("/teamgroups/{name}", groupEditHandler).Methods(http.MethodGet)
 }
