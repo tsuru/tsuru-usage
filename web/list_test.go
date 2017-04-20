@@ -66,7 +66,7 @@ func (s *S) TestTeamList(c *check.C) {
 		"Name": "my team"
 	}
 ]`
-	Client.Transport = &cmdtest.Transport{Message: data, Status: http.StatusOK}
+	repositories.Client.Transport = &cmdtest.Transport{Message: data, Status: http.StatusOK}
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest("GET", "/web/teams", nil)
 	c.Assert(err, check.IsNil)
@@ -79,7 +79,7 @@ func (s *S) TestTeamList(c *check.C) {
 }
 
 func (s *S) TestTeamListAPIError(c *check.C) {
-	Client.Transport = &cmdtest.Transport{Status: http.StatusInternalServerError}
+	repositories.Client.Transport = &cmdtest.Transport{Status: http.StatusInternalServerError}
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest("GET", "/web/teams", nil)
 	c.Assert(err, check.IsNil)
@@ -90,7 +90,7 @@ func (s *S) TestTeamListAPIError(c *check.C) {
 }
 
 func (s *S) TestTeamListInvalidJSON(c *check.C) {
-	Client.Transport = &cmdtest.Transport{Message: "invalid", Status: http.StatusOK}
+	repositories.Client.Transport = &cmdtest.Transport{Message: "invalid", Status: http.StatusOK}
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest("GET", "/web/teams", nil)
 	c.Assert(err, check.IsNil)

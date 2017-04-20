@@ -19,15 +19,16 @@ type Group struct {
 	Pools []string
 }
 
-var Client = &http.Client{}
-
 func FetchGroup(name string) (*Group, error) {
-	host := os.Getenv("API_HOST")
-	url := fmt.Sprintf("%s/api/teamgroups/%s", host, name)
+	url := fmt.Sprintf("%s/api/teamgroups/%s", apiHost, name)
 	response, err := Client.Get(url)
-	if err != nil || response.StatusCode != http.StatusOK {
+	status := response.StatusCode
+	if err != nil || (status != http.StatusOK && status != http.StatusNotFound) {
 		log.Printf("Error fetching %s: %s", url, err)
 		return nil, fmt.Errorf("Error fetching %s: %s", url, err)
+	}
+	if status == http.StatusNotFound {
+		return nil, nil
 	}
 	defer response.Body.Close()
 	var group Group
