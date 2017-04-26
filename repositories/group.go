@@ -88,6 +88,7 @@ func UpdateGroup(group Group) error {
 		log.Printf(errMsg)
 		return errors.New(errMsg)
 	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	response, err := Client.Do(req)
 	if err != nil {
 		errMsg := fmt.Sprintf("Error in PUT %s: %s", addr, err.Error())
