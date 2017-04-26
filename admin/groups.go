@@ -7,6 +7,7 @@ package admin
 import (
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/tsuru/tsuru-usage/repositories"
@@ -18,16 +19,13 @@ func groupListHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	status := r.FormValue("status")
-	if status != "updated" {
-		status = ""
-	}
+	updated, _ := strconv.ParseBool(r.FormValue("updated"))
 	context := struct {
-		Groups []repositories.Group
-		Status string
+		Groups  []repositories.Group
+		Updated bool
 	}{
 		groups,
-		status,
+		updated,
 	}
 	err = render(w, "templates/groups/index.html", context)
 	if err != nil {
@@ -113,5 +111,5 @@ func groupUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	http.Redirect(w, r, "/admin/teamgroups?status=updated", 302)
+	http.Redirect(w, r, "/admin/teamgroups?updated=true", 302)
 }

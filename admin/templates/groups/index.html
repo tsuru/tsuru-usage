@@ -1,11 +1,10 @@
 {{define "content"}}
 <h1 class="my-4">Groups</h1>
 
-{{if .Status}}
-	<div class="alert alert-success" role="alert">Group successfully {{.Status}}!</div>
-{{end}}
+{{if .Updated}}
+	<div class="alert alert-success" role="alert">Group successfully updated!</div> {{end}}
 
-<table class="table table-hover">
+<table class="table table-hover" style="margin: 3rem 0">
 	<tr>
 		<th>Group</th>
 		<th>Teams</th>
