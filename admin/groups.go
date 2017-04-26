@@ -35,6 +35,30 @@ func groupListHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func groupNewHandler(w http.ResponseWriter, r *http.Request) {
+	teams, err := repositories.FetchTeams()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	pools, err := repositories.FetchPools()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	context := struct {
+		Teams []repositories.Team
+		Pools []repositories.Pool
+	}{
+		teams,
+		pools,
+	}
+	err = render(w, "templates/groups/new.html", context)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
 func groupEditHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	groupName := vars["name"]
