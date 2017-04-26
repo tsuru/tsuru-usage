@@ -18,10 +18,16 @@ func groupListHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	status := r.FormValue("status")
+	if status != "updated" {
+		status = ""
+	}
 	context := struct {
 		Groups []repositories.Group
+		Status string
 	}{
 		groups,
+		status,
 	}
 	err = render(w, "templates/groups/index.html", context)
 	if err != nil {
@@ -83,5 +89,5 @@ func groupUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	http.Redirect(w, r, "/admin/teamgroups", 302)
+	http.Redirect(w, r, "/admin/teamgroups?status=updated", 302)
 }
