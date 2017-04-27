@@ -1,8 +1,11 @@
 {{define "content"}}
 <h1 class="my-4">Groups</h1>
 
-{{if .Updated}}
-	<div class="alert alert-success" role="alert">Group successfully updated!</div> {{end}}
+<div id="messages">
+	{{if .Updated}}
+		<div class="alert alert-success" role="alert">Group successfully updated!</div>
+	{{end}}
+</div>
 
 <table class="table table-hover" style="margin: 3rem 0">
 	<tr>
@@ -39,6 +42,12 @@
 		})
 	}
 
+	const showMessage = (options) => {
+		const messageType = options.type || "success"
+		const messageContainer = document.querySelector("#messages")
+		messageContainer.innerHTML = `<div class="alert alert-${messageType}" role="alert">${options.text}</div>`
+	}
+
 	document.querySelectorAll(".delete-group").forEach(link => {
 		link.addEventListener("click", event => {
 			event.preventDefault()
@@ -51,6 +60,10 @@
 						if (tableLine) {
 							tableLine.remove()
 						}
+						showMessage({ text: "Group successfully deleted!" })
+					}).
+					catch((err) => {
+						showMessage({ message: "Error deleting group: " + err.message, type: "danger" })
 					})
 			}
 		})
