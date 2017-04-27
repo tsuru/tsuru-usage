@@ -113,3 +113,13 @@ func groupUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	http.Redirect(w, r, "/admin/teamgroups?updated=true", 302)
 }
+
+func groupDeleteHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	groupName := vars["name"]
+	group := repositories.Group{Name: groupName}
+	err := repositories.DeleteGroup(group)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+}

@@ -103,3 +103,26 @@ func UpdateGroup(group Group) error {
 	}
 	return nil
 }
+
+func DeleteGroup(group Group) error {
+	addr := fmt.Sprintf("%s/api/teamgroups/%s", apiHost, group.Name)
+	req, err := http.NewRequest(http.MethodDelete, addr, nil)
+	if err != nil {
+		errMsg := fmt.Sprintf("Error in DELETE %s: %s", addr, err.Error())
+		log.Printf(errMsg)
+		return errors.New(errMsg)
+	}
+	response, err := Client.Do(req)
+	if err != nil {
+		errMsg := fmt.Sprintf("Error in DELETE %s: %s", addr, err.Error())
+		log.Printf(errMsg)
+		return errors.New(errMsg)
+	}
+	status := response.StatusCode
+	if status != http.StatusOK {
+		errMsg := fmt.Sprintf("Error in DELETE %s: HTTP %d", addr, status)
+		log.Printf(errMsg)
+		return errors.New(errMsg)
+	}
+	return nil
+}

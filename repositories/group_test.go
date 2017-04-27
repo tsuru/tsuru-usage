@@ -86,3 +86,27 @@ func (s *S) TestFetchGroupsInvalidResponse(c *check.C) {
 	c.Assert(err, check.NotNil)
 	c.Assert(groups, check.IsNil)
 }
+
+func (s *S) TestUpdateGroup(c *check.C) {
+	Client.Transport = &cmdtest.Transport{Status: http.StatusOK}
+	err := UpdateGroup(Group{Name: "my-group"})
+	c.Assert(err, check.IsNil)
+}
+
+func (s *S) TestUpdateGroupError(c *check.C) {
+	Client.Transport = &cmdtest.Transport{Status: http.StatusInternalServerError}
+	err := UpdateGroup(Group{Name: "my-group"})
+	c.Assert(err, check.NotNil)
+}
+
+func (s *S) TestDeleteGroup(c *check.C) {
+	Client.Transport = &cmdtest.Transport{Status: http.StatusOK}
+	err := DeleteGroup(Group{Name: "my-group"})
+	c.Assert(err, check.IsNil)
+}
+
+func (s *S) TestDeleteGroupError(c *check.C) {
+	Client.Transport = &cmdtest.Transport{Status: http.StatusInternalServerError}
+	err := DeleteGroup(Group{Name: "my-group"})
+	c.Assert(err, check.NotNil)
+}
