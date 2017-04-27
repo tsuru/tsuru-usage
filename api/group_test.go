@@ -91,3 +91,21 @@ func (s *S) TestViewTeamGroup(c *check.C) {
 	c.Assert(body, check.DeepEquals, expected)
 	c.Assert(recorder.HeaderMap.Get("Content-type"), check.DeepEquals, "application/json")
 }
+
+func (s *S) TestRemoveTeamGroup(c *check.C) {
+	conn, err := db.Conn()
+	c.Assert(err, check.IsNil)
+	conn.TeamGroups().Insert(
+		bson.M{"name": "group1", "teams": []string{"team1", "team2"}},
+		bson.M{"name": "group2", "teams": []string{"team3"}, "pools": []string{"pool1"}},
+	)
+	recorder := httptest.NewRecorder()
+	request, err := http.NewRequest(http.MethodDelete, "/teamgroups/group1", nil)
+	c.Assert(err, check.IsNil)
+	s.server(recorder, request)
+	c.Assert(recorder.Code, check.Equals, http.StatusOK)
+	var groups []TeamGroup
+	err = conn.TeamGroups().Find(nil).All(&groups)
+	c.Assert(err, check.IsNil)
+	c.Assert(groups, check.DeepEquals, []TeamGroup{{Name: "group2", Teams: []string{"team3"}, Pools: []string{"pool1"}}})
+}

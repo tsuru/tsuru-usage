@@ -84,3 +84,13 @@ func viewTeamGroup(w http.ResponseWriter, r *http.Request) error {
 	w.Header().Set("Content-Type", "application/json")
 	return json.NewEncoder(w).Encode(teamGroup)
 }
+
+func removeTeamGroup(w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	name := vars["name"]
+	conn, err := db.Conn()
+	if err != nil {
+		return err
+	}
+	return conn.TeamGroups().Remove(bson.M{"name": name})
+}
