@@ -31,7 +31,7 @@ func (s *S) TestGroupList(c *check.C) {
 ]`
 	repositories.Client.Transport = &cmdtest.Transport{Message: groupsData, Status: http.StatusOK}
 	recorder := httptest.NewRecorder()
-	request, err := http.NewRequest("GET", "/admin/teamgroups", nil)
+	request, err := http.NewRequest(http.MethodGet, "/admin/teamgroups", nil)
 	c.Assert(err, check.IsNil)
 	m := runServer()
 	c.Assert(m, check.NotNil)
@@ -49,7 +49,7 @@ func (s *S) TestGroupList(c *check.C) {
 func (s *S) TestGroupListWithError(c *check.C) {
 	repositories.Client.Transport = &cmdtest.Transport{Status: http.StatusInternalServerError}
 	recorder := httptest.NewRecorder()
-	request, err := http.NewRequest("GET", "/admin/teamgroups", nil)
+	request, err := http.NewRequest(http.MethodGet, "/admin/teamgroups", nil)
 	c.Assert(err, check.IsNil)
 	m := runServer()
 	c.Assert(m, check.NotNil)
@@ -76,7 +76,7 @@ func (s *S) TestGroupNew(c *check.C) {
 ]`
 	repositories.Client.Transport = makeMultiConditionalTransport([]string{teamsData, poolsData})
 	recorder := httptest.NewRecorder()
-	request, err := http.NewRequest("GET", "/admin/teamgroups/new", nil)
+	request, err := http.NewRequest(http.MethodGet, "/admin/teamgroups/new", nil)
 	c.Assert(err, check.IsNil)
 	m := runServer()
 	c.Assert(m, check.NotNil)
@@ -113,7 +113,7 @@ func (s *S) TestGroupEdit(c *check.C) {
 ]`
 	repositories.Client.Transport = makeMultiConditionalTransport([]string{groupData, teamsData, poolsData})
 	recorder := httptest.NewRecorder()
-	request, err := http.NewRequest("GET", "/admin/teamgroups/mygroup", nil)
+	request, err := http.NewRequest(http.MethodGet, "/admin/teamgroups/mygroup", nil)
 	c.Assert(err, check.IsNil)
 	m := runServer()
 	c.Assert(m, check.NotNil)
@@ -129,7 +129,7 @@ func (s *S) TestGroupEdit(c *check.C) {
 func (s *S) TestGroupEditGroupNotFound(c *check.C) {
 	repositories.Client.Transport = &cmdtest.Transport{Status: http.StatusNotFound}
 	recorder := httptest.NewRecorder()
-	request, err := http.NewRequest("GET", "/admin/teamgroups/mygroup", nil)
+	request, err := http.NewRequest(http.MethodGet, "/admin/teamgroups/mygroup", nil)
 	c.Assert(err, check.IsNil)
 	m := runServer()
 	c.Assert(m, check.NotNil)
@@ -140,7 +140,7 @@ func (s *S) TestGroupEditGroupNotFound(c *check.C) {
 func (s *S) TestGroupEditRequestError(c *check.C) {
 	repositories.Client.Transport = &cmdtest.Transport{Status: http.StatusInternalServerError}
 	recorder := httptest.NewRecorder()
-	request, err := http.NewRequest("GET", "/admin/teamgroups/mygroup", nil)
+	request, err := http.NewRequest(http.MethodGet, "/admin/teamgroups/mygroup", nil)
 	c.Assert(err, check.IsNil)
 	m := runServer()
 	c.Assert(m, check.NotNil)
@@ -152,7 +152,7 @@ func (s *S) TestGroupUpdate(c *check.C) {
 	repositories.Client.Transport = &cmdtest.Transport{Status: http.StatusOK}
 	recorder := httptest.NewRecorder()
 	v := url.Values{"teams": []string{"team 1"}, "pools": []string{"pool 1", "pool 2"}}
-	request, err := http.NewRequest("POST", "/admin/teamgroups/mygroup", strings.NewReader(v.Encode()))
+	request, err := http.NewRequest(http.MethodPost, "/admin/teamgroups/mygroup", strings.NewReader(v.Encode()))
 	c.Assert(err, check.IsNil)
 	m := runServer()
 	c.Assert(m, check.NotNil)
@@ -164,7 +164,7 @@ func (s *S) TestGroupUpdateError(c *check.C) {
 	repositories.Client.Transport = &cmdtest.Transport{Status: http.StatusInternalServerError}
 	recorder := httptest.NewRecorder()
 	v := url.Values{"teams": []string{"team 1"}, "pools": []string{"pool 1", "pool 2"}}
-	request, err := http.NewRequest("POST", "/admin/teamgroups/mygroup", strings.NewReader(v.Encode()))
+	request, err := http.NewRequest(http.MethodPost, "/admin/teamgroups/mygroup", strings.NewReader(v.Encode()))
 	c.Assert(err, check.IsNil)
 	m := runServer()
 	c.Assert(m, check.NotNil)

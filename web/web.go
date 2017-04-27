@@ -45,12 +45,12 @@ var Client = &http.Client{}
 
 // Router return a http.Handler with all web routes
 func Router(m *mux.Router) {
-	m.HandleFunc("/", indexHandler).Methods("GET")
-	m.HandleFunc("/pools", poolListHandler).Methods("GET")
-	m.HandleFunc("/teams", teamListHandler).Methods("GET")
-	m.HandleFunc("/teamgroups", groupListHandler).Methods("GET")
-	m.HandleFunc("/pools/{name}/{year}", poolUsageHandler).Methods("GET")
-	m.HandleFunc("/teamgroups/{group}/pools/{year}", groupPoolUsageHandler).Methods("GET")
-	m.HandleFunc("/apps/{teamOrGroup}/{year}", appUsageHandler).Methods("GET")
-	m.HandleFunc("/services/{teamOrGroup}/{year}", serviceUsageHandler).Methods("GET")
+	m.HandleFunc("/", indexHandler).Methods(http.MethodGet)
+	m.HandleFunc("/pools", poolListHandler).Methods(http.MethodGet)
+	m.HandleFunc("/teams", teamListHandler).Methods(http.MethodGet)
+	m.HandleFunc("/teamgroups", groupListHandler).Methods(http.MethodGet)
+	m.HandleFunc("/pools/{name}/{year}", poolUsageHandler).Methods(http.MethodGet)
+	m.HandleFunc("/teamgroups/{group}/pools/{year}", groupPoolUsageHandler).Methods(http.MethodGet)
+	m.HandleFunc("/apps/{teamOrGroup}/{year}", appUsageHandler).Methods(http.MethodGet)
+	m.HandleFunc("/services/{teamOrGroup}/{year}", serviceUsageHandler).Methods(http.MethodGet)
 }

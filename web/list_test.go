@@ -25,7 +25,7 @@ func (s *S) TestPoolList(c *check.C) {
 ]`
 	repositories.Client.Transport = &cmdtest.Transport{Message: data, Status: http.StatusOK}
 	recorder := httptest.NewRecorder()
-	request, err := http.NewRequest("GET", "/web/pools", nil)
+	request, err := http.NewRequest(http.MethodGet, "/web/pools", nil)
 	c.Assert(err, check.IsNil)
 	m := runServer()
 	c.Assert(m, check.NotNil)
@@ -38,7 +38,7 @@ func (s *S) TestPoolList(c *check.C) {
 func (s *S) TestPoolListAPIError(c *check.C) {
 	repositories.Client.Transport = &cmdtest.Transport{Status: http.StatusInternalServerError}
 	recorder := httptest.NewRecorder()
-	request, err := http.NewRequest("GET", "/web/pools", nil)
+	request, err := http.NewRequest(http.MethodGet, "/web/pools", nil)
 	c.Assert(err, check.IsNil)
 	m := runServer()
 	c.Assert(m, check.NotNil)
@@ -49,7 +49,7 @@ func (s *S) TestPoolListAPIError(c *check.C) {
 func (s *S) TestPoolListInvalidJSON(c *check.C) {
 	repositories.Client.Transport = &cmdtest.Transport{Message: "invalid", Status: http.StatusOK}
 	recorder := httptest.NewRecorder()
-	request, err := http.NewRequest("GET", "/web/pools", nil)
+	request, err := http.NewRequest(http.MethodGet, "/web/pools", nil)
 	c.Assert(err, check.IsNil)
 	m := runServer()
 	c.Assert(m, check.NotNil)
@@ -68,7 +68,7 @@ func (s *S) TestTeamList(c *check.C) {
 ]`
 	repositories.Client.Transport = &cmdtest.Transport{Message: data, Status: http.StatusOK}
 	recorder := httptest.NewRecorder()
-	request, err := http.NewRequest("GET", "/web/teams", nil)
+	request, err := http.NewRequest(http.MethodGet, "/web/teams", nil)
 	c.Assert(err, check.IsNil)
 	m := runServer()
 	c.Assert(m, check.NotNil)
@@ -81,7 +81,7 @@ func (s *S) TestTeamList(c *check.C) {
 func (s *S) TestTeamListAPIError(c *check.C) {
 	repositories.Client.Transport = &cmdtest.Transport{Status: http.StatusInternalServerError}
 	recorder := httptest.NewRecorder()
-	request, err := http.NewRequest("GET", "/web/teams", nil)
+	request, err := http.NewRequest(http.MethodGet, "/web/teams", nil)
 	c.Assert(err, check.IsNil)
 	m := runServer()
 	c.Assert(m, check.NotNil)
@@ -92,7 +92,7 @@ func (s *S) TestTeamListAPIError(c *check.C) {
 func (s *S) TestTeamListInvalidJSON(c *check.C) {
 	repositories.Client.Transport = &cmdtest.Transport{Message: "invalid", Status: http.StatusOK}
 	recorder := httptest.NewRecorder()
-	request, err := http.NewRequest("GET", "/web/teams", nil)
+	request, err := http.NewRequest(http.MethodGet, "/web/teams", nil)
 	c.Assert(err, check.IsNil)
 	m := runServer()
 	c.Assert(m, check.NotNil)
@@ -114,7 +114,7 @@ func (s *S) TestGroupList(c *check.C) {
 ]`
 	repositories.Client.Transport = &cmdtest.Transport{Message: data, Status: http.StatusOK}
 	recorder := httptest.NewRecorder()
-	request, err := http.NewRequest("GET", "/web/teamgroups", nil)
+	request, err := http.NewRequest(http.MethodGet, "/web/teamgroups", nil)
 	c.Assert(err, check.IsNil)
 	m := runServer()
 	c.Assert(m, check.NotNil)
@@ -127,7 +127,7 @@ func (s *S) TestGroupList(c *check.C) {
 func (s *S) TestGroupListAPIError(c *check.C) {
 	repositories.Client.Transport = &cmdtest.Transport{Status: http.StatusInternalServerError}
 	recorder := httptest.NewRecorder()
-	request, err := http.NewRequest("GET", "/web/teamgroups", nil)
+	request, err := http.NewRequest(http.MethodGet, "/web/teamgroups", nil)
 	c.Assert(err, check.IsNil)
 	m := runServer()
 	c.Assert(m, check.NotNil)
@@ -138,7 +138,7 @@ func (s *S) TestGroupListAPIError(c *check.C) {
 func (s *S) TestGroupListInvalidJSON(c *check.C) {
 	repositories.Client.Transport = &cmdtest.Transport{Message: "invalid", Status: http.StatusOK}
 	recorder := httptest.NewRecorder()
-	request, err := http.NewRequest("GET", "/web/teamgroups", nil)
+	request, err := http.NewRequest(http.MethodGet, "/web/teamgroups", nil)
 	c.Assert(err, check.IsNil)
 	m := runServer()
 	c.Assert(m, check.NotNil)
