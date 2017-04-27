@@ -9,15 +9,51 @@
 		<th>Group</th>
 		<th>Teams</th>
 		<th>Pools</th>
+		<th>Delete</th>
 	</tr>
 	{{range $group := .Groups}}
-		<tr>
+		<tr data-group-name="{{$group.Name}}">
 			<td><a href="/admin/teamgroups/{{$group.Name}}">{{$group.Name}}</a></td>
 			<td>{{StringsJoin $group.Teams ", "}}</td>
 			<td>{{StringsJoin $group.Pools ", "}}</td>
+			<td>
+				<a href="#" data-group-name="{{$group.Name}}" class="delete-group">
+					<svg class="octicon octicon-trashcan" viewBox="0 0 12 16" version="1.1" width="12" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M11 2H9c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1H2c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1v9c0 .55.45 1 1 1h7c.55 0 1-.45 1-1V5c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm-1 12H3V5h1v8h1V5h1v8h1V5h1v8h1V5h1v9zm1-10H2V3h9v1z"></path></svg>
+				</a>
+			</td>
 		</tr>
 	{{end}}
 </table>
 
 <a class="btn btn-primary btn-lg" href="/admin/teamgroups/new" role="button">New group</a>
+
+<script>
+	const deleteGroup = (groupName) => {
+		url = "/admin/teamgroups/" + groupName
+		return new Promise((resolve, reject) => {
+			const req = new XMLHttpRequest()
+			req.open("DELETE", url)
+			req.onload = () => req.status === 200 ? resolve(groupName, req.response) : reject(Error(req.statusText))
+			req.onerror = (e) => reject(Error(`Network Error: ${e}`))
+			req.send()
+		})
+	}
+
+	document.querySelectorAll(".delete-group").forEach(link => {
+		link.addEventListener("click", event => {
+			event.preventDefault()
+
+			const groupName = link.getAttribute("data-group-name")
+			if (groupName && confirm(`Delete group ${groupName}?`)) {
+				deleteGroup(groupName).
+					then((groupName, data) => {
+						const tableLine = document.querySelector(`tr[data-group-name='${groupName}']`)
+						if (tableLine) {
+							tableLine.remove()
+						}
+					})
+			}
+		})
+	});
+</script>
 {{end}}
