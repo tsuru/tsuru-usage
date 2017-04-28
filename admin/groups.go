@@ -13,7 +13,8 @@ import (
 	"github.com/tsuru/tsuru-usage/repositories"
 )
 
-type GroupContext struct {
+type groupContext struct {
+	Group *repositories.Group
 	Teams []repositories.Team
 	Pools []repositories.Pool
 }
@@ -39,11 +40,11 @@ func groupListHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func groupNewHandler(w http.ResponseWriter, r *http.Request) {
-	groupContext, err := fetchGroupContext()
+	context, err := fetchGroupContext("")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-	err = render(w, "templates/groups/new.html", groupContext)
+	err = render(w, "templates/groups/new.html", context)
 	if err != nil {
 		log.Println(err)
 	}
@@ -52,27 +53,14 @@ func groupNewHandler(w http.ResponseWriter, r *http.Request) {
 func groupEditHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	groupName := vars["name"]
-	group, err := repositories.FetchGroup(groupName)
+	context, err := fetchGroupContext(groupName)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	if group == nil {
+	if context.Group == nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
-	}
-	groupContext, err := fetchGroupContext()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-	}
-	context := struct {
-		Group repositories.Group
-		Teams []repositories.Team
-		Pools []repositories.Pool
-	}{
-		*group,
-		groupContext.Teams,
-		groupContext.Pools,
 	}
 	err = render(w, "templates/groups/edit.html", context)
 	if err != nil {
@@ -110,9 +98,14 @@ func groupDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func fetchGroupContext() (GroupContext, error) {
-	context := GroupContext{}
-	errs := make(chan error, 2)
+func fetchGroupContext(groupName string) (groupContext, error) {
+	shouldFetchGroup := groupName != ""
+	context := groupContext{}
+	cap := 2
+	if shouldFetchGroup {
+		cap = 3
+	}
+	errs := make(chan error, cap)
 	go func() {
 		teams, err := repositories.FetchTeams()
 		context.Teams = teams
@@ -123,7 +116,14 @@ func fetchGroupContext() (GroupContext, error) {
 		context.Pools = pools
 		errs <- err
 	}()
-	for i := 0; i < cap(errs); i++ {
+	if shouldFetchGroup {
+		go func() {
+			group, err := repositories.FetchGroup(groupName)
+			context.Group = group
+			errs <- err
+		}()
+	}
+	for i := 0; i < cap; i++ {
 		err := <-errs
 		if err != nil {
 			return context, err

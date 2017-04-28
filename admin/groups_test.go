@@ -137,7 +137,20 @@ func (s *S) TestGroupEdit(c *check.C) {
 }
 
 func (s *S) TestGroupEditGroupNotFound(c *check.C) {
-	repositories.Client.Transport = &cmdtest.Transport{Status: http.StatusNotFound}
+	repositories.Client.Transport = &multiTransport{ConditionalTransports: []cmdtest.ConditionalTransport{
+		cmdtest.ConditionalTransport{
+			Transport: cmdtest.Transport{Status: http.StatusNotFound},
+			CondFunc: func(r *http.Request) bool {
+				return r.URL.Path == "/api/teamgroups/mygroup"
+			},
+		},
+		cmdtest.ConditionalTransport{
+			Transport: cmdtest.Transport{Message: "[]", Status: http.StatusOK},
+			CondFunc: func(r *http.Request) bool {
+				return true
+			},
+		},
+	}}
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodGet, "/admin/teamgroups/mygroup", nil)
 	c.Assert(err, check.IsNil)
