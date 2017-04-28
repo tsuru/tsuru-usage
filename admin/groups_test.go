@@ -84,7 +84,7 @@ func (s *S) TestGroupNew(c *check.C) {
 		"Name": "pool b"
 	}
 ]`
-	repositories.Client.Transport = makeMultiConditionalTransport([]string{"/api/teams", "/api/pools"}, []string{teamsData, poolsData})
+	repositories.Client.Transport = makeMultiTransport([]string{"/api/teams", "/api/pools"}, []string{teamsData, poolsData})
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodGet, "/admin/teamgroups/new", nil)
 	c.Assert(err, check.IsNil)
@@ -121,7 +121,7 @@ func (s *S) TestGroupEdit(c *check.C) {
 		"Name": "pool b"
 	}
 ]`
-	repositories.Client.Transport = makeMultiConditionalTransport([]string{"/api/teamgroups/mygroup", "/api/teams", "/api/pools"}, []string{groupData, teamsData, poolsData})
+	repositories.Client.Transport = makeMultiTransport([]string{"/api/teamgroups/mygroup", "/api/teams", "/api/pools"}, []string{groupData, teamsData, poolsData})
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodGet, "/admin/teamgroups/mygroup", nil)
 	c.Assert(err, check.IsNil)

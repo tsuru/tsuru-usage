@@ -5,6 +5,7 @@
 package admin
 
 import (
+	"errors"
 	"net/http"
 	"testing"
 
@@ -26,7 +27,7 @@ func runServer() *mux.Router {
 	return r
 }
 
-func makeMultiConditionalTransport(urls []string, messages []string) *cmdtest.MultiConditionalTransport {
+func makeMultiTransport(urls []string, messages []string) *multiTransport {
 	cts := make([]cmdtest.ConditionalTransport, len(messages))
 	for i, message := range messages {
 		url := urls[i]
@@ -37,5 +38,18 @@ func makeMultiConditionalTransport(urls []string, messages []string) *cmdtest.Mu
 			},
 		}
 	}
-	return &cmdtest.MultiConditionalTransport{ConditionalTransports: cts}
+	return &multiTransport{ConditionalTransports: cts}
+}
+
+type multiTransport struct {
+	ConditionalTransports []cmdtest.ConditionalTransport
+}
+
+func (m *multiTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	for _, ct := range m.ConditionalTransports {
+		if ct.CondFunc(req) {
+			return ct.RoundTrip(req)
+		}
+	}
+	return &http.Response{Body: nil, StatusCode: 500}, errors.New("condition failed")
 }
