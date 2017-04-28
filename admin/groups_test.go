@@ -84,7 +84,7 @@ func (s *S) TestGroupNew(c *check.C) {
 		"Name": "pool b"
 	}
 ]`
-	repositories.Client.Transport = makeMultiTransport([]string{"/api/teams", "/api/pools"}, []string{teamsData, poolsData})
+	repositories.Client.Transport = makeAnyConditionalTransport([]string{"/api/teams", "/api/pools"}, []string{teamsData, poolsData})
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodGet, "/admin/teamgroups/new", nil)
 	c.Assert(err, check.IsNil)
@@ -121,7 +121,7 @@ func (s *S) TestGroupEdit(c *check.C) {
 		"Name": "pool b"
 	}
 ]`
-	repositories.Client.Transport = makeMultiTransport([]string{"/api/teamgroups/mygroup", "/api/teams", "/api/pools"}, []string{groupData, teamsData, poolsData})
+	repositories.Client.Transport = makeAnyConditionalTransport([]string{"/api/teamgroups/mygroup", "/api/teams", "/api/pools"}, []string{groupData, teamsData, poolsData})
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodGet, "/admin/teamgroups/mygroup", nil)
 	c.Assert(err, check.IsNil)
@@ -137,7 +137,7 @@ func (s *S) TestGroupEdit(c *check.C) {
 }
 
 func (s *S) TestGroupEditGroupNotFound(c *check.C) {
-	repositories.Client.Transport = &multiTransport{ConditionalTransports: []cmdtest.ConditionalTransport{
+	repositories.Client.Transport = &cmdtest.AnyConditionalTransport{ConditionalTransports: []cmdtest.ConditionalTransport{
 		cmdtest.ConditionalTransport{
 			Transport: cmdtest.Transport{Status: http.StatusNotFound},
 			CondFunc: func(r *http.Request) bool {

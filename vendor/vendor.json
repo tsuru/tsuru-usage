@@ -99,16 +99,16 @@
 			"revisionTime": "2017-02-16T22:32:56Z"
 		},
 		{
-			"checksumSHA1": "jlPMfwkYSDu6BpMWoc1j5bVlP7k=",
+			"checksumSHA1": "AkEdSCjYLvsWxE6A+JcFzQuCzY0=",
 			"path": "github.com/tsuru/tsuru/cmd/cmdtest",
-			"revision": "d0b65c9d88e14c87ce4fb659cbd784148dd8e6f2",
-			"revisionTime": "2017-04-11T21:19:24Z"
+			"revision": "8f2f90a1fbc408208383cc182c52de0dcd8d6bee",
+			"revisionTime": "2017-04-28T19:29:59Z"
 		},
 		{
 			"checksumSHA1": "qNo9+rhrLxGBdR55pwWCELmozNg=",
 			"path": "github.com/tsuru/tsuru/db/storage",
-			"revision": "a73846f1f6c8dd03cddeea6d96874b8eb03b3fe7",
-			"revisionTime": "2017-04-04T13:19:44Z"
+			"revision": "8f2f90a1fbc408208383cc182c52de0dcd8d6bee",
+			"revisionTime": "2017-04-28T19:29:59Z"
 		},
 		{
 			"checksumSHA1": "ezZyPBDiKHM5y+YmlIhrWIzgbfw=",
