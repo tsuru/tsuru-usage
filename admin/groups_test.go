@@ -29,7 +29,12 @@ func (s *S) TestGroupList(c *check.C) {
 		"Pools": ["pool 3"]
 	}
 ]`
-	repositories.Client.Transport = &cmdtest.Transport{Message: groupsData, Status: http.StatusOK}
+	repositories.Client.Transport = &cmdtest.ConditionalTransport{
+		Transport: cmdtest.Transport{Message: groupsData, Status: http.StatusOK},
+		CondFunc: func(r *http.Request) bool {
+			return r.URL.Path == "/api/teamgroups"
+		},
+	}
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodGet, "/admin/teamgroups", nil)
 	c.Assert(err, check.IsNil)
@@ -47,7 +52,12 @@ func (s *S) TestGroupList(c *check.C) {
 }
 
 func (s *S) TestGroupListWithError(c *check.C) {
-	repositories.Client.Transport = &cmdtest.Transport{Status: http.StatusInternalServerError}
+	repositories.Client.Transport = &cmdtest.ConditionalTransport{
+		Transport: cmdtest.Transport{Status: http.StatusInternalServerError},
+		CondFunc: func(r *http.Request) bool {
+			return r.URL.Path == "/api/teamgroups"
+		},
+	}
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodGet, "/admin/teamgroups", nil)
 	c.Assert(err, check.IsNil)
@@ -74,7 +84,7 @@ func (s *S) TestGroupNew(c *check.C) {
 		"Name": "pool b"
 	}
 ]`
-	repositories.Client.Transport = makeMultiConditionalTransport([]string{teamsData, poolsData})
+	repositories.Client.Transport = makeMultiConditionalTransport([]string{"/api/teams", "/api/pools"}, []string{teamsData, poolsData})
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodGet, "/admin/teamgroups/new", nil)
 	c.Assert(err, check.IsNil)
@@ -111,7 +121,7 @@ func (s *S) TestGroupEdit(c *check.C) {
 		"Name": "pool b"
 	}
 ]`
-	repositories.Client.Transport = makeMultiConditionalTransport([]string{groupData, teamsData, poolsData})
+	repositories.Client.Transport = makeMultiConditionalTransport([]string{"/api/teamgroups/mygroup", "/api/teams", "/api/pools"}, []string{groupData, teamsData, poolsData})
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodGet, "/admin/teamgroups/mygroup", nil)
 	c.Assert(err, check.IsNil)
@@ -149,7 +159,12 @@ func (s *S) TestGroupEditRequestError(c *check.C) {
 }
 
 func (s *S) TestGroupUpdate(c *check.C) {
-	repositories.Client.Transport = &cmdtest.Transport{Status: http.StatusOK}
+	repositories.Client.Transport = &cmdtest.ConditionalTransport{
+		Transport: cmdtest.Transport{Status: http.StatusOK},
+		CondFunc: func(r *http.Request) bool {
+			return r.URL.Path == "/api/teamgroups/mygroup" && r.Method == http.MethodPut
+		},
+	}
 	recorder := httptest.NewRecorder()
 	v := url.Values{"teams": []string{"team 1"}, "pools": []string{"pool 1", "pool 2"}}
 	request, err := http.NewRequest(http.MethodPost, "/admin/teamgroups/mygroup", strings.NewReader(v.Encode()))
@@ -165,6 +180,33 @@ func (s *S) TestGroupUpdateError(c *check.C) {
 	recorder := httptest.NewRecorder()
 	v := url.Values{"teams": []string{"team 1"}, "pools": []string{"pool 1", "pool 2"}}
 	request, err := http.NewRequest(http.MethodPost, "/admin/teamgroups/mygroup", strings.NewReader(v.Encode()))
+	c.Assert(err, check.IsNil)
+	m := runServer()
+	c.Assert(m, check.NotNil)
+	m.ServeHTTP(recorder, request)
+	c.Assert(recorder.Code, check.Equals, http.StatusInternalServerError)
+}
+
+func (s *S) TestGroupDelete(c *check.C) {
+	repositories.Client.Transport = &cmdtest.ConditionalTransport{
+		Transport: cmdtest.Transport{Status: http.StatusOK},
+		CondFunc: func(r *http.Request) bool {
+			return r.URL.Path == "/api/teamgroups/mygroup" && r.Method == http.MethodDelete
+		},
+	}
+	recorder := httptest.NewRecorder()
+	request, err := http.NewRequest(http.MethodDelete, "/admin/teamgroups/mygroup", nil)
+	c.Assert(err, check.IsNil)
+	m := runServer()
+	c.Assert(m, check.NotNil)
+	m.ServeHTTP(recorder, request)
+	c.Assert(recorder.Code, check.Equals, http.StatusOK)
+}
+
+func (s *S) TestGroupDeleteError(c *check.C) {
+	repositories.Client.Transport = &cmdtest.Transport{Status: http.StatusInternalServerError}
+	recorder := httptest.NewRecorder()
+	request, err := http.NewRequest(http.MethodDelete, "/admin/teamgroups/mygroup", nil)
 	c.Assert(err, check.IsNil)
 	m := runServer()
 	c.Assert(m, check.NotNil)

@@ -26,13 +26,15 @@ func runServer() *mux.Router {
 	return r
 }
 
-func makeMultiConditionalTransport(messages []string) *cmdtest.MultiConditionalTransport {
-	trueFunc := func(*http.Request) bool { return true }
+func makeMultiConditionalTransport(urls []string, messages []string) *cmdtest.MultiConditionalTransport {
 	cts := make([]cmdtest.ConditionalTransport, len(messages))
 	for i, message := range messages {
+		url := urls[i]
 		cts[i] = cmdtest.ConditionalTransport{
 			Transport: cmdtest.Transport{Message: message, Status: http.StatusOK},
-			CondFunc:  trueFunc,
+			CondFunc: func(r *http.Request) bool {
+				return r.URL.Path == url
+			},
 		}
 	}
 	return &cmdtest.MultiConditionalTransport{ConditionalTransports: cts}
