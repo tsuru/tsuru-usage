@@ -13,8 +13,11 @@ This app will expose usage metrics on a `/metrics` endpoint. Two main metrics ar
 
 1. Create a go application on tsuru
 2. Deploy this entire repo to tsuru
-3. Set the TSURU_TOKEN environment on the app passing a token that has at least the following permissions (with global context):
+3. Set `USAGE_USER_TOKEN` environment on the app passing a token that has at least the following permissions (with global context):
     - app.read
     - node.read
-4. Set API_HOST environment variable to tsuru-usage API host address (ex: `http://localhost:8888`)
-5. To add basic HTTP authentication to the admin section, set `ADMIN_USERNAME` and `ADMIN_PASSWORD` environment variables
+4. Set `API_HOST` environment variable to tsuru-usage API host address (ex: `http://localhost:8888`)
+5. Set `PROMETHEUS_HOST` environment variable to your Prometheus server address
+6. Set `MONGODB_URL` and `MONGODB_DATABASE_NAME` variables to your MongoDB server credentials
+7. Set in `USAGE_SERVICES` a comma-separated list of services you want Prometheus to monitor
+8. To add basic HTTP authentication to the admin section, set `ADMIN_USERNAME` and `ADMIN_PASSWORD` environment variables
