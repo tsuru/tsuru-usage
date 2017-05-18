@@ -18,7 +18,7 @@
 	<div class="form-group row">
 		<label for="year" class="col-sm-1 col-form-label">Year</label>
 		<div class="col-sm-3">
-			<input type="number" size="4" name="year" required class="form-control" />
+			<input type="number" size="4" id="year-field" name="year" required class="form-control" />
 		</div>
 	</div>
 
@@ -53,6 +53,7 @@
 </form>
 
 <script>
+	document.querySelector("#year-field").value = (new Date()).getFullYear();
 	const urls = {
 		"pools": "/web/teamgroups/{group}/pools/{year}",
 		"apps": "/web/apps/{group}/{year}?group=true",
