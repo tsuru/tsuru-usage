@@ -58,6 +58,9 @@ func runServer(port string, tsuruAPI tsuru.TsuruAPI) {
 
 func router(tsuruAPI tsuru.TsuruAPI) http.Handler {
 	r := mux.NewRouter().StrictSlash(true)
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/web/", http.StatusPermanentRedirect)
+	})
 	apiRouter := r.PathPrefix("/api").Subrouter()
 	api.Router(apiRouter, tsuruAPI)
 	webRouter := r.PathPrefix("/web").Subrouter()
